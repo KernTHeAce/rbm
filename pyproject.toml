@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "rbm"
+version = "0.1.0"
+description = ""
+authors = ["KernTHeAce <vanatuz2@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.11"
+kedro = "*"
+torch = "<1.13"
+pandas = "*"
+torchvision = "*"
+scikit-learn = "*"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+isort = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
