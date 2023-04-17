@@ -41,9 +41,10 @@ def get_optimizer(model, lr, loaded_optim: OrderedDict = cc.NONE):
     return optimizer
 
 
-def rbm_init_ae(model, train_loader, device):
-    model.encoder = rbm_linear_sequential_init(model.encoder, train_loader, device)
-    model.decoder = rbm_linear_sequential_init(model.decoder, train_loader, device, base_modules=model.encoder)
+def rbm_init_ae(model, train_loader, device, is_model_initialized):
+    if not is_model_initialized:
+        model.encoder = rbm_linear_sequential_init(model.encoder, train_loader, device)
+        model.decoder = rbm_linear_sequential_init(model.decoder, train_loader, device, base_modules=model.encoder)
     return model
 
 
@@ -72,7 +73,7 @@ def one_epoch_ae_train(model,
         optimizer.step()
         average_loss.add(loss.item())
     time_end = time() - time_start
-    return time_end, average_loss.avg, optimizer
+    return time_end, average_loss.avg, optimizer, model
 
 
 def test(model, loss_fn, test_loader, device, preprocessing=None):
