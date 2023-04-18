@@ -1,8 +1,10 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
-from src.common.const import MetricsOutputValues as mov
-from src.common.const import MetricConst as mc
 import torch
+
+from src.common.const import MetricConst as mc
+from src.common.const import MetricsOutputValues as mov
+from src.nodes.metrics.tools import update_metrics
 
 
 def data_preprocess(data: list):
@@ -18,7 +20,7 @@ def data_preprocess(data: list):
     return result
 
 
-def mse_metric(y_true, y_pred, metrics: Dict[str, Any]=None) -> Dict[str, Dict[str, Any]]:
+def mse_metric(y_true, y_pred, metrics: Dict[str, Any] = None) -> Dict[str, Dict[str, Any]]:
     y_pred = data_preprocess(y_pred)
     y_true = data_preprocess(y_true)
     assert len(y_true) == len(y_pred)
@@ -30,4 +32,4 @@ def mse_metric(y_true, y_pred, metrics: Dict[str, Any]=None) -> Dict[str, Dict[s
             mc.BEST: mc.DOWN,
         },
     }
-    return data if metrics is None else metrics.update(data)
+    return update_metrics(metrics, data)

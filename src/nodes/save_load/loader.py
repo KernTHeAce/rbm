@@ -1,19 +1,16 @@
-from src.common.const import SaverLoaderConst as slc
 from pathlib import Path
 
-from src.common.const import CommonConst as cc
-
 import torch
+
+from src.common.const import CommonConst as cc
+from src.common.const import SaverLoaderConst as slc
 
 
 def load_state_dict(experiment_dir_path, checkpoint=slc.LAST, new_experiment: bool = True):
     model_path = Path(experiment_dir_path, f"{checkpoint}.pt")
     if not model_path.exists():
         if new_experiment:
-            print(
-                f"It is a new experiment and there is no checkpoint {checkpoint}"
-                f"Loader will be mot work"
-                )
+            print(f"It is a new experiment and there is no checkpoint {checkpoint}" f"Loader will be mot work")
             return cc.NONE, cc.NONE, False
         else:
             raise Exception(f"There is no such file: {str(model_path)}")

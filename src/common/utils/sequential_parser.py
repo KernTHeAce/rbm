@@ -1,11 +1,18 @@
 from torch import nn
+
 from src.common.const import ParserConst as pc
 
 
 class SequentialParser:
     def __init__(self):
         super().__init__()
-        self.layer_types = (nn.Linear, nn.Conv1d, nn.Conv2d, nn.ConvTranspose1d, nn.ConvTranspose2d)
+        self.layer_types = (
+            nn.Linear,
+            nn.Conv1d,
+            nn.Conv2d,
+            nn.ConvTranspose1d,
+            nn.ConvTranspose2d,
+        )
         self.layer_types_no_param = (
             nn.MaxPool1d,
             nn.MaxPool2d,

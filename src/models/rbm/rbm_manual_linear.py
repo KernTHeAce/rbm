@@ -138,7 +138,12 @@ class RBMManualLinearCR(BaseRBM):
         return x0, y0, x1, y1
 
     def _forward_bias(
-        self, x0: torch.Tensor, lr: float = 1e-3, lr_auto: bool = False, lr_const: int = None, is_training: bool = True
+        self,
+        x0: torch.Tensor,
+        lr: float = 1e-3,
+        lr_auto: bool = False,
+        lr_const: int = None,
+        is_training: bool = True,
     ):
         with torch.no_grad():
             s_yo = self.get_weight_sum(x0, self.w_in, self.t_in)
@@ -149,7 +154,15 @@ class RBMManualLinearCR(BaseRBM):
             y1 = self.f(s_y1)
             if is_training:
                 self.update_weights_biases(
-                    x0=x0, y0=y0, x1=x1, y1=y1, s_x1=s_x1, s_y1=s_y1, lr=lr, lr_auto=lr_auto, lr_const=lr_const
+                    x0=x0,
+                    y0=y0,
+                    x1=x1,
+                    y1=y1,
+                    s_x1=s_x1,
+                    s_y1=s_y1,
+                    lr=lr,
+                    lr_auto=lr_auto,
+                    lr_const=lr_const,
                 )
             return x0, y0, x1, y1
 
@@ -192,7 +205,11 @@ class RBMManualLinearCR(BaseRBM):
         self.t_out = self.t_out - lr_x * t_out_grad
 
     def get_weight_bias_grad(
-        self, output: torch.Tensor, reference: torch.Tensor, output_ws: torch.Tensor, middle_output: torch.Tensor
+        self,
+        output: torch.Tensor,
+        reference: torch.Tensor,
+        output_ws: torch.Tensor,
+        middle_output: torch.Tensor,
     ):
         grad_part = (output - reference) * self.f_(output_ws)
         w_grad = torch.matmul(grad_part.t(), middle_output)
@@ -272,7 +289,13 @@ class RBMManualLinearCR(BaseRBM):
         is_bias: bool = True,
     ):
         if is_bias:
-            return self._forward_bias(x0=x0, lr=lr, lr_auto=lr_auto, lr_const=lr_const, is_training=is_training)
+            return self._forward_bias(
+                x0=x0,
+                lr=lr,
+                lr_auto=lr_auto,
+                lr_const=lr_const,
+                is_training=is_training,
+            )
         else:
             return self._forward_no_bias(x0, lr, lr_auto, is_training)
 

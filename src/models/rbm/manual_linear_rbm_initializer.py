@@ -1,7 +1,9 @@
-from src.common.utils.sequential_parser import SequentialParser
-from src.common.const import ParserConst as pc
-from .rbm_manual_linear import RBMManualLinearCR
 from torch.nn import Sequential
+
+from src.common.const import ParserConst as pc
+from src.common.utils.sequential_parser import SequentialParser
+
+from .rbm_manual_linear import RBMManualLinearCR
 
 
 def rbm_linear_sequential_init(sequential, train_loader, device, epochs: int = 1, base_modules=None):

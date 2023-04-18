@@ -13,8 +13,8 @@ torchvision = "*"
 scikit-learn = "*"
 
 [tool.poetry.dev-dependencies]
-black = "*"
-isort = "*"
+black = "^22.6.0"
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

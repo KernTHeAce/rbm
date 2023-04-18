@@ -1,8 +1,10 @@
 import glob
-import torch
 import os
-from src.common.const import SaverLoaderConst as slc
+
+import torch
+
 from src.common.const import MetricConst as mc
+from src.common.const import SaverLoaderConst as slc
 
 
 def parse_name(name: str):
@@ -64,7 +66,10 @@ def first_save(experiment_dir_path, params, metrics):
 def save_state_dict(experiment_dir_path, metrics, model, optimizer):
     old_data = {}
     checkpoints = [file for file in glob.glob(experiment_dir_path + "\\*.pt")]
-    params = {slc.MODEL_STATE_DICT: model.state_dict(), slc.OPTIMIZER_STATE_DICT: optimizer.state_dict()}
+    params = {
+        slc.MODEL_STATE_DICT: model.state_dict(),
+        slc.OPTIMIZER_STATE_DICT: optimizer.state_dict(),
+    }
     params.update(metrics)
     if not checkpoints:
         first_save(experiment_dir_path, params, metrics)
@@ -74,4 +79,7 @@ def save_state_dict(experiment_dir_path, metrics, model, optimizer):
         new_checkpoints = {item[slc.PATH] for key, item in new_data.items()}
         remove_old(checkpoints, new_checkpoints)
         save(experiment_dir_path, new_checkpoints, new_data, params)
-    return 1
+    metrics_report = ""
+    for metric_name, value in metrics.items():
+        metrics_report += f"{metric_name}: {value[mc.VALUE]}    "
+    return metrics_report

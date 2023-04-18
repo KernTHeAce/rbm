@@ -1,12 +1,21 @@
 from old.model.layers.reshape import Reshape
-from src.model.layers.flatten import Flatten
+
 # from src.model.pretrain.base_rbm import *
 from torch import nn
+
+from src.model.layers.flatten import Flatten
+
 
 class BaseDBN(nn.Module):
     def __init__(self):
         super().__init__()
-        self.dbn_layer_types = (nn.Linear, nn.Conv1d, nn.Conv2d, nn.ConvTranspose1d, nn.ConvTranspose2d)
+        self.dbn_layer_types = (
+            nn.Linear,
+            nn.Conv1d,
+            nn.Conv2d,
+            nn.ConvTranspose1d,
+            nn.ConvTranspose2d,
+        )
         self.dbn_layer_types_no_param = (
             Reshape,
             Flatten,
@@ -17,7 +26,13 @@ class BaseDBN(nn.Module):
             nn.Dropout,
             nn.Dropout2d,
         )
-        self.dbn_layer_activation = (nn.Sigmoid, nn.Tanh, nn.ReLU, nn.LeakyReLU, nn.Softmax)
+        self.dbn_layer_activation = (
+            nn.Sigmoid,
+            nn.Tanh,
+            nn.ReLU,
+            nn.LeakyReLU,
+            nn.Softmax,
+        )
 
     def forward(self, in_features, *args, **kwargs):
         pass

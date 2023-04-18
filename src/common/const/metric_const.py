@@ -18,7 +18,7 @@ class MetricConst:
 
     VALUE: str = "value"
     BEST: str = "best"
-    UP: str = "up",
+    UP: str = ("up",)
     DOWN: str = "down"
 
 
@@ -29,3 +29,5 @@ class MetricsOutputValues:
     RECALL: str = "recall"
     F1: str = "f1"
     MSE: str = "mse"
+    TEST_AVERAGE_LOSS: str = "test_av_loss"
+    TRAIN_AVERAGE_LOSS: str = "train_av_loss"

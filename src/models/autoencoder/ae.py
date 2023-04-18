@@ -1,6 +1,7 @@
-from src.models.base_ae import BaseAE
 from torch import nn
 from torch.nn import Module
+
+from src.models.base_ae import BaseAE
 
 
 class AE(BaseAE):
