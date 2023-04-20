@@ -1,5 +1,6 @@
 import glob
 import os
+from pathlib import Path
 
 import torch
 
@@ -7,15 +8,16 @@ from src.common.const import MetricConst as mc
 from src.common.const import SaverLoaderConst as slc
 
 
-def parse_name(name: str):
-    params = name.split("_")[1:]
-    data = torch.load(name)
+def parse_name(path: str):
+    name = path.split("/")[-1]
+    params = name[:-3].split("_")[1:]
+    data = torch.load(path)
     if params:
         result = {}
         for param in params:
             result[param] = {
-                slc.PATH: name,
-                slc.VALUE: data[param],
+                slc.PATH: path,
+                slc.VALUE: data[param][slc.VALUE],
             }
         return result
     return {}
@@ -50,10 +52,10 @@ def save(experiment_dir_path, new_checkpoints, new_data, params):
     for old_name, item in save_manager.items():
         new_name = f"{slc.BEST}_{'_'.join(item)}"
         if old_name != slc.CURRENT:
-            os.rename(old_name, new_name)
+            os.rename(old_name, f"{experiment_dir_path}/{new_name}.pt")
         else:
             torch.save(params, f"{experiment_dir_path}/{new_name}.pt")
-            torch.save(params, f"{experiment_dir_path}/{slc.LAST}.pt")
+    torch.save(params, f"{experiment_dir_path}/{slc.LAST}.pt")
 
 
 def first_save(experiment_dir_path, params, metrics):
@@ -63,18 +65,26 @@ def first_save(experiment_dir_path, params, metrics):
     torch.save(params, last)
 
 
-def save_state_dict(experiment_dir_path, metrics, model, optimizer):
+def get_checkpoints(path):
+    return [str(item) for item in Path(path).iterdir() if str(item).endswith(".pt")]
+
+
+def save_state_dict(experiment_dir_path, metrics, model, optimizer, epoch):
+    if not Path(experiment_dir_path).exists():
+        os.mkdir(experiment_dir_path)
     old_data = {}
-    checkpoints = [file for file in glob.glob(experiment_dir_path + "\\*.pt")]
+    checkpoints = get_checkpoints(experiment_dir_path)
     params = {
         slc.MODEL_STATE_DICT: model.state_dict(),
         slc.OPTIMIZER_STATE_DICT: optimizer.state_dict(),
+        slc.EPOCH: epoch,
     }
     params.update(metrics)
     if not checkpoints:
         first_save(experiment_dir_path, params, metrics)
-    for file in checkpoints:
-        old_data.update(parse_name(file))
+    else:
+        for file in checkpoints:
+            old_data.update(parse_name(file))
         new_data = update_best_results(old_data, metrics)
         new_checkpoints = {item[slc.PATH] for key, item in new_data.items()}
         remove_old(checkpoints, new_checkpoints)

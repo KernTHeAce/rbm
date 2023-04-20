@@ -13,3 +13,4 @@ class SaverLoaderConst:
 
     MODEL_STATE_DICT: str = "model_state_dict"
     OPTIMIZER_STATE_DICT: str = "optimizer_state_dict"
+    EPOCH: str = "epoch"

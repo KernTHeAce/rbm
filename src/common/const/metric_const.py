@@ -13,7 +13,7 @@ class MetricAverageValues:
 @dataclass(frozen=True)
 class MetricConst:
     AVERAGE: str = "average"
-    PER_LABEL: str = "per_label"
+    PER_LABEL: str = "per-label"
     MSE: str = "mse"
 
     VALUE: str = "value"
@@ -29,5 +29,5 @@ class MetricsOutputValues:
     RECALL: str = "recall"
     F1: str = "f1"
     MSE: str = "mse"
-    TEST_AVERAGE_LOSS: str = "test_av_loss"
-    TRAIN_AVERAGE_LOSS: str = "train_av_loss"
+    TEST_AVERAGE_LOSS: str = "test-av-loss"
+    TRAIN_AVERAGE_LOSS: str = "train-av-loss"

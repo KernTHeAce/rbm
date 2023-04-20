@@ -52,7 +52,7 @@ epoch_pipeline = pipeline(
         node(func=mse_metric, inputs=["y_true", "y_pred", "test_train_av_loss_metrics"], outputs="metrics"),
         node(
             func=save_state_dict,
-            inputs=["experiment_path", "metrics", "updated_model", "updated_optimizer"],
+            inputs=["experiment_path", "metrics", "updated_model", "updated_optimizer", "epoch"],
             outputs="metrics_report",
         ),
         node(
