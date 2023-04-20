@@ -10,7 +10,7 @@ from src.common.const import SaverLoaderConst as slc
 
 def parse_name(path: str):
     name = path.split("/")[-1]
-    params = name[:-3].split("_")[1:]
+    params = name[:-3].split("_")[1:]  # -3 because ".pt". 1 because first always will be "best"
     data = torch.load(path)
     if params:
         result = {}
