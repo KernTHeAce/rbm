@@ -3,7 +3,14 @@ from typing import Any, Dict
 from kedro.io import DataCatalog, MemoryDataSet
 
 
-def update_datacatalog(datacatalog: DataCatalog, new_data: Dict[str, Any], replace=False):
+def update_datacatalog(datacatalog: DataCatalog, new_data: Dict[str, Any], replace=False, force=True):
     for key, value in new_data.items():
-        datacatalog.add(key, MemoryDataSet(value), replace=replace)
+        if force:
+            datacatalog.add(key, MemoryDataSet(value), replace=replace)
+        else:
+            try:
+                datacatalog.datasets.__getattribute__(key)
+            except AttributeError:
+                datacatalog.add(key, MemoryDataSet(value), replace=replace)
+
     return datacatalog

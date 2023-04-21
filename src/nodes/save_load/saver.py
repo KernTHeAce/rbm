@@ -1,11 +1,12 @@
-import glob
 import os
 from pathlib import Path
 
 import torch
 
 from src.common.const import MetricConst as mc
+from src.common.const import CommonConst as cc
 from src.common.const import SaverLoaderConst as slc
+from src import EXPERIMENTS_DIR
 
 
 def parse_name(path: str):
@@ -66,11 +67,12 @@ def first_save(experiment_dir_path, params, metrics):
 
 
 def get_checkpoints(path):
-    return [str(item) for item in Path(path).iterdir() if str(item).endswith(".pt")]
+    return [str(item) for item in path.iterdir() if str(item).endswith(".pt")]
 
 
-def save_state_dict(experiment_dir_path, metrics, model, optimizer, epoch):
-    if not Path(experiment_dir_path).exists():
+def save_state_dict(experiment_name, metrics, model, optimizer, epoch):
+    experiment_dir_path = Path(EXPERIMENTS_DIR, experiment_name)
+    if not experiment_dir_path.exists():
         os.mkdir(experiment_dir_path)
     old_data = {}
     checkpoints = get_checkpoints(experiment_dir_path)
@@ -89,7 +91,5 @@ def save_state_dict(experiment_dir_path, metrics, model, optimizer, epoch):
         new_checkpoints = {item[slc.PATH] for key, item in new_data.items()}
         remove_old(checkpoints, new_checkpoints)
         save(experiment_dir_path, new_checkpoints, new_data, params)
-    metrics_report = ""
-    for metric_name, value in metrics.items():
-        metrics_report += f"{metric_name}: {value[mc.VALUE]}    "
-    return metrics_report
+
+    return cc.NONE

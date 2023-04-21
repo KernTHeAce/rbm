@@ -30,7 +30,7 @@ preprocessing_pipeline = pipeline(
         node(
             func=load_state_dict,
             inputs=["experiment_path", "checkpoint", "new_experiment"],
-            outputs=["loaded_model", "loaded_optimizer", "is_model_initialized"],
+            outputs=["loaded_model", "loaded_optimizer", "loaded_epoch", "is_model_initialized"],
         ),
         node(
             func=csv_to_data_loader,
@@ -60,6 +60,7 @@ preprocessing_pipeline = pipeline(
                 "train_data_loader": "train_data_loader",
                 "test_data_loader": "test_data_loader",
                 "loss": "loss",
+                "epoch": "loaded_epoch",
             },
             outputs="results",
         ),

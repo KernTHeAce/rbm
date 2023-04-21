@@ -2,17 +2,16 @@ from kedro.io import DataCatalog, MemoryDataSet
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
-from src import BASE_DIR
 from src.common.const import SaverLoaderConst as slc
-from src.nodes.common import output_concat
+from src.nodes.common import output_concat, log_dict
 from src.nodes.metrics import mse_metric
-from src.nodes.save_load import save_state_dict
+from src.nodes.save_load import save_state_dict, mlflow_registry
 from src.nodes.test_train import one_epoch_ae_train, test
 
 epoch_data = DataCatalog(
     {
         "data_preprocess": MemoryDataSet(lambda x: x),
-        "experiment_path": MemoryDataSet(f"{BASE_DIR}/experiments/test_1"),
+        "experiment_name": MemoryDataSet("test_1"),
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
     }
@@ -52,8 +51,21 @@ epoch_pipeline = pipeline(
         node(func=mse_metric, inputs=["y_true", "y_pred", "test_train_av_loss_metrics"], outputs="metrics"),
         node(
             func=save_state_dict,
-            inputs=["experiment_path", "metrics", "updated_model", "updated_optimizer", "epoch"],
-            outputs="metrics_report",
+            inputs=["experiment_name", "metrics", "updated_model", "updated_optimizer", "epoch"],
+            outputs="none_1",
+        ),
+        node(
+            func=mlflow_registry,
+            inputs=["experiment_name", "epoch", "metrics"],
+            outputs="none_2",
+        ),
+        node(
+            func=log_dict,
+            inputs={
+                "metrics": "metrics",
+                "epoch": "epoch"
+            },
+            outputs=["common_report", "metrics_report"]
         ),
         node(
             func=output_concat,

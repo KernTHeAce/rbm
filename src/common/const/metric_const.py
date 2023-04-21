@@ -12,6 +12,7 @@ class MetricAverageValues:
 
 @dataclass(frozen=True)
 class MetricConst:
+    METRICS: str = "metrics"
     AVERAGE: str = "average"
     PER_LABEL: str = "per-label"
     MSE: str = "mse"
