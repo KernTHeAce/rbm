@@ -7,7 +7,7 @@ from src.pipelines.rbm_train.preprocessing import preprocessing_data, preprocess
 from src.common.const import SaverLoaderConst as slc
 from common.const import CommonConst as cc
 
-MAX_EPOCH = 30
+MAX_EPOCH = 1
 runner = SequentialRunner()
 if __name__ == "__main__":
     preprocessing_output = runner.run(preprocessing_pipeline, preprocessing_data)
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     current_epoch = preprocessing_output["results"]["epoch"] if preprocessing_output["results"]["epoch"] != cc.NONE else 0
 
-    for i in range(current_epoch + 1, MAX_EPOCH + current_epoch):
+    for i in range(current_epoch + 1, MAX_EPOCH + current_epoch + 1):
         loop_data = update_datacatalog(loop_data, {slc.EPOCH: i}, replace=True)
         epoch_output = runner.run(epoch_pipeline, loop_data)
         loop_data = update_datacatalog(loop_data, epoch_output["results"], replace=True)

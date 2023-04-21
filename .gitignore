@@ -3,10 +3,7 @@
 *.log
 *.log.*
 .venv
-.DS_Store
 *.pyc
 */__pycache__/*
-.coverage
 .env
-.secrets/
-./experiments/*
+experiments/
