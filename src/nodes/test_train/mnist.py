@@ -2,7 +2,6 @@ from collections import OrderedDict
 from time import time
 from typing import Any, Dict, List
 
-import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -12,18 +11,31 @@ from src.common.const import CommonConst as cc
 from src.common.const import MetricConst as mc
 from src.common.const import MetricsOutputValues as mov
 from src.common.utils.average import Average
-from src.models.autoencoder.ae import AE
 from src.models.mnist_classifier.small import Classifier
 from src.models.rbm.manual_linear_rbm_initializer import rbm_linear_sequential_init
 from src.nodes.metrics import update_metrics
 
-from .datasets import CSVSoccerDataset
 
-def prepr(input):
-    return input.view(input.size()[0], -1)
+def get_classifier_model(features: List[int] = cc.NONE, loaded_model: OrderedDict = cc.NONE):
+    model = Classifier(features=features)
+    if not loaded_model == cc.NONE:
+        model.load_state_dict(loaded_model)
+    return model
 
 
-def one_epoch_mnist_classifier_train(
+def rbm_init_classifier(model: Classifier, train_loader, device, is_model_initialized, preprocessing):
+    if not is_model_initialized:
+        model.seq = rbm_linear_sequential_init(model.seq, train_loader, device, preprocessing)
+    return model
+
+
+def get_mnist_dataset(
+    torch_dataset_path: str, train: bool = True, download: bool = False, transform=transforms.ToTensor()
+) -> torch.utils.data.Dataset:
+    return datasets.MNIST(root=torch_dataset_path, train=train, download=download, transform=transform)
+
+
+def train_mnist_classifier(
     model, optimizer, loss_fn, train_loader, device, preprocessing=None, metrics: Dict[str, Any] = None
 ):
     time_start = time()
@@ -31,7 +43,7 @@ def one_epoch_mnist_classifier_train(
     average_loss = Average()
     for input, labels in train_loader:
         if preprocessing is not None:
-            input = prepr(input)
+            input = preprocessing(input)
         input = input.to(device).to(torch.double)
         optimizer.zero_grad()
         output_pred = model(input)
@@ -50,7 +62,7 @@ def one_epoch_mnist_classifier_train(
     return time_end, update_metrics(metrics, data), optimizer, model
 
 
-def test(model, loss_fn, test_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):
+def test_mnist_classifier(model, loss_fn, test_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):
     time_start = time()
     model = model.train().to(device)
     with torch.no_grad():

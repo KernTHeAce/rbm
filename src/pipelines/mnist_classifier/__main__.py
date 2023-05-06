@@ -1,13 +1,12 @@
-from kedro.runner import SequentialRunner
-
-from src.common.utils import update_datacatalog
-from src.pipelines.mnist_classifier.epoch import epoch_data, epoch_pipeline
-from preprocessing import preprocessing_data, preprocessing_pipeline
-
-from src.common.const import SaverLoaderConst as slc
-from common.const import CommonConst as cc
 import torchvision
+from kedro.runner import SequentialRunner
+from preprocessing import preprocessing_data, preprocessing_pipeline
 from torchvision import datasets
+
+from common.const import CommonConst as cc
+from common.const import SaverLoaderConst as slc
+from common.utils import update_datacatalog
+from pipelines.mnist_classifier.epoch import epoch_data, epoch_pipeline
 from src import DATA_DIR, EXPERIMENTS_DIR
 
 MAX_EPOCH = 20
@@ -20,7 +19,9 @@ if __name__ == "__main__":
 
     loop_data = update_datacatalog(epoch_data, preprocessing_output["results"])
     #
-    current_epoch = preprocessing_output["results"]["epoch"] if preprocessing_output["results"]["epoch"] != cc.NONE else 0
+    current_epoch = (
+        preprocessing_output["results"]["epoch"] if preprocessing_output["results"]["epoch"] != cc.NONE else 0
+    )
     #
     for i in range(current_epoch + 1, MAX_EPOCH + current_epoch + 1):
         loop_data = update_datacatalog(loop_data, {slc.EPOCH: i}, replace=True)

@@ -1,8 +1,8 @@
 import torch
 from torch.nn import Sequential
 
-from src.common.const import ParserConst as pc
 from common.const import CommonConst as cc
+from src.common.const import ParserConst as pc
 from src.common.utils.sequential_parser import SequentialParser
 
 from .rbm_manual_linear import RBMManualLinearCR

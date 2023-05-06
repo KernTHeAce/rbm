@@ -3,11 +3,13 @@ from kedro.io import DataCatalog, MemoryDataSet
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
+from nodes.test_train import common
+from nodes.test_train import loss_optim_device as lod
+from nodes.test_train import soccer as soc
 from src import DATA_DIR, EXPERIMENTS_DIR
 from src.common.const import SaverLoaderConst as slc
 from src.nodes import output_concat
 from src.nodes.save_load import load_state_dict
-from src.nodes.test_train import csv_to_data_loader, get_ae_model, get_device, get_mse_loss, get_optimizer, rbm_init_ae
 
 preprocessing_data = DataCatalog(
     {
@@ -22,7 +24,7 @@ preprocessing_data = DataCatalog(
         "experiment_path": MemoryDataSet(f"{EXPERIMENTS_DIR}/test_1"),
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
-        "preprocessing": MemoryDataSet(lambda x: x)
+        "preprocessing": MemoryDataSet(lambda x: x),
     }
 )
 
@@ -34,21 +36,21 @@ preprocessing_pipeline = pipeline(
             outputs=["loaded_model", "loaded_optimizer", "loaded_epoch", "is_model_initialized"],
         ),
         node(
-            func=csv_to_data_loader,
+            func=common.csv_to_data_loader,
             inputs=["soccer_train_dataset", "batch_size", "shuffle"],
             outputs="train_data_loader",
         ),
         node(
-            func=csv_to_data_loader,
+            func=common.csv_to_data_loader,
             inputs=["soccer_test_dataset", "batch_size", "shuffle"],
             outputs="test_data_loader",
         ),
-        node(func=get_device, inputs="is_cuda", outputs="device"),
-        node(func=get_ae_model, inputs=["features", "loaded_model"], outputs="model"),
-        node(func=get_mse_loss, inputs=None, outputs="loss"),
-        node(func=get_optimizer, inputs=["model", "lr"], outputs="initialized_optimizer"),
+        node(func=lod.get_device, inputs="is_cuda", outputs="device"),
+        node(func=soc.get_ae_model, inputs=["features", "loaded_model"], outputs="model"),
+        node(func=lod.get_mse_loss, inputs=None, outputs="loss"),
+        node(func=lod.get_adam_optimizer, inputs=["model", "lr"], outputs="initialized_optimizer"),
         node(
-            func=rbm_init_ae,
+            func=soc.rbm_init_ae,
             inputs=["model", "train_data_loader", "device", "is_model_initialized", "preprocessing"],
             outputs="initialized_model",
         ),
@@ -62,7 +64,7 @@ preprocessing_pipeline = pipeline(
                 "test_data_loader": "test_data_loader",
                 "loss": "loss",
                 "epoch": "loaded_epoch",
-                "lr": "lr"
+                "lr": "lr",
             },
             outputs="results",
         ),

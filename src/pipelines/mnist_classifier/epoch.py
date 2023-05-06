@@ -2,15 +2,14 @@ from kedro.io import DataCatalog, MemoryDataSet
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
-from src.common.const import SaverLoaderConst as slc
-from src.nodes.common import output_concat, log_dict
-from src.nodes.metrics import mse_metric
-from src.nodes.save_load import save_state_dict, mlflow_registry
-from src.nodes.test_train.mnist import test, one_epoch_mnist_classifier_train
+from common.const import SaverLoaderConst as slc
+from nodes import save_load as sl
+from nodes.common import log_dict, output_concat
+from nodes.metrics import mse_metric
+from nodes.test_train import mnist
 
 epoch_data = DataCatalog(
     {
-        "data_preprocess": MemoryDataSet(lambda x: x),
         "experiment_name": MemoryDataSet("test_2"),
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
@@ -20,14 +19,14 @@ epoch_data = DataCatalog(
 epoch_pipeline = pipeline(
     [
         node(
-            func=one_epoch_mnist_classifier_train,
+            func=mnist.train_mnist_classifier,
             inputs=[
                 "initialized_model",
                 "initialized_optimizer",
                 "loss",
                 "train_data_loader",
                 "device",
-                "data_preprocess",
+                "preprocessing",
             ],
             outputs=[
                 "train_time",
@@ -37,7 +36,7 @@ epoch_pipeline = pipeline(
             ],
         ),
         node(
-            func=test,
+            func=mnist.test_mnist_classifier,
             inputs=[
                 "initialized_model",
                 "loss",
@@ -50,12 +49,12 @@ epoch_pipeline = pipeline(
         ),
         node(func=mse_metric, inputs=["y_true", "y_pred", "test_train_av_loss_metrics"], outputs="metrics"),
         node(
-            func=save_state_dict,
+            func=sl.save_state_dict,
             inputs=["experiment_name", "metrics", "updated_model", "updated_optimizer", "epoch"],
             outputs="none_1",
         ),
         node(
-            func=mlflow_registry,
+            func=sl.mlflow_registry,
             inputs={
                 "experiment_name": "experiment_name",
                 "metrics": "metrics",
@@ -64,7 +63,7 @@ epoch_pipeline = pipeline(
                 "device": "device",
                 "loss": "loss",
                 "epoch": "epoch",
-                "lr": "lr"
+                "lr": "lr",
             },
             outputs="none_2",
         ),
@@ -74,7 +73,7 @@ epoch_pipeline = pipeline(
                 "metrics": "metrics",
                 "epoch": "epoch",
             },
-            outputs=["common_report", "metrics_report"]
+            outputs=["common_report", "metrics_report"],
         ),
         node(
             func=output_concat,
