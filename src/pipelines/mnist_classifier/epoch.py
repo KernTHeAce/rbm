@@ -6,12 +6,12 @@ from src.common.const import SaverLoaderConst as slc
 from src.nodes.common import output_concat, log_dict
 from src.nodes.metrics import mse_metric
 from src.nodes.save_load import save_state_dict, mlflow_registry
-from src.nodes.test_train import one_epoch_ae_train, test
+from src.nodes.test_train.mnist import test, one_epoch_mnist_classifier_train
 
 epoch_data = DataCatalog(
     {
         "data_preprocess": MemoryDataSet(lambda x: x),
-        "experiment_name": MemoryDataSet("test_1"),
+        "experiment_name": MemoryDataSet("test_2"),
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
     }
@@ -20,7 +20,7 @@ epoch_data = DataCatalog(
 epoch_pipeline = pipeline(
     [
         node(
-            func=one_epoch_ae_train,
+            func=one_epoch_mnist_classifier_train,
             inputs=[
                 "initialized_model",
                 "initialized_optimizer",
@@ -43,7 +43,7 @@ epoch_pipeline = pipeline(
                 "loss",
                 "test_data_loader",
                 "device",
-                "data_preprocess",
+                "preprocessing",
                 "train_av_loss_metrics",
             ],
             outputs=["test_time", "test_train_av_loss_metrics", "y_true", "y_pred"],
@@ -56,14 +56,23 @@ epoch_pipeline = pipeline(
         ),
         node(
             func=mlflow_registry,
-            inputs=["experiment_name", "epoch", "metrics"],
+            inputs={
+                "experiment_name": "experiment_name",
+                "metrics": "metrics",
+                "model": "initialized_model",
+                "optimizer": "initialized_optimizer",
+                "device": "device",
+                "loss": "loss",
+                "epoch": "epoch",
+                "lr": "lr"
+            },
             outputs="none_2",
         ),
         node(
             func=log_dict,
             inputs={
                 "metrics": "metrics",
-                "epoch": "epoch"
+                "epoch": "epoch",
             },
             outputs=["common_report", "metrics_report"]
         ),

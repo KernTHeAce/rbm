@@ -1,12 +1,14 @@
+import torch
 from torch.nn import Sequential
 
 from src.common.const import ParserConst as pc
+from common.const import CommonConst as cc
 from src.common.utils.sequential_parser import SequentialParser
 
 from .rbm_manual_linear import RBMManualLinearCR
 
 
-def rbm_linear_sequential_init(sequential, train_loader, device, epochs: int = 1, base_modules=None):
+def rbm_linear_sequential_init(sequential, train_loader, device, preprocessing, epochs: int = 1, base_modules=None):
     parser = SequentialParser()
     layers = parser.get_layers(sequential)
     result_modules = []
@@ -14,7 +16,9 @@ def rbm_linear_sequential_init(sequential, train_loader, device, epochs: int = 1
         rbm = RBMManualLinearCR(layer=layer[pc.LAYER], f=layer[pc.FUNC], device=device)
         for epoch in range(epochs):
             for data in train_loader:
-                data = data.to(device)
+                if preprocessing and preprocessing != cc.NONE:
+                    data = preprocessing(data)
+                data = data.to(device).to(torch.double)
                 data = data if base_modules is None else base_modules(data)
                 if layer_index != 0:
                     pretrained_model = Sequential(*result_modules)

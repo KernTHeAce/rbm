@@ -15,7 +15,12 @@ def data_preprocess(data: list):
                 if result is None:
                     result = torch.clone(i)
                 else:
-                    torch.cat((result, i), 0)
+                    result = torch.cat((result, i), 0)
+        elif len(item.shape) == 1:
+            if result is None:
+                result = torch.clone(item)
+            else:
+                result = torch.cat((result, item), 0)
 
     return result
 

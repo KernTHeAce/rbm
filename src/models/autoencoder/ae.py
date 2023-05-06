@@ -53,6 +53,9 @@ class AE(BaseAE):
     def get_decoder(self):
         return self.decoder
 
+    def __str__(self):
+        return f"AE model with features: {self.features}"
+
     # TODO move to BaseAE
     def from_dbn(self, trained_layers):
         encoder, decoder = [module for module in self.modules() if type(module) == nn.Sequential]
