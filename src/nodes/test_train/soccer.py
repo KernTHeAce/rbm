@@ -4,8 +4,6 @@ from typing import Any, Dict, List
 
 import torch
 
-
-
 from src.common.const import CommonConst as cc
 from src.common.const import MetricConst as mc
 from src.common.const import MetricsOutputValues as mov

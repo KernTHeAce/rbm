@@ -1,21 +1,10 @@
-from kedro.io import DataCatalog, MemoryDataSet
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
 from nodes import common
 from nodes import save_load as sl
 from nodes.test_train import soccer as soc
-from src.common.const import SaverLoaderConst as slc
 from src.nodes.metrics import mse_metric
-
-epoch_data = DataCatalog(
-    {
-        "data_preprocess": MemoryDataSet(lambda x: x),
-        "experiment_name": MemoryDataSet("test_1"),
-        "checkpoint": MemoryDataSet(slc.LAST),
-        "new_experiment": MemoryDataSet(True),
-    }
-)
 
 epoch_pipeline = pipeline(
     [
@@ -27,7 +16,7 @@ epoch_pipeline = pipeline(
                 "loss",
                 "train_data_loader",
                 "device",
-                "data_preprocess",
+                "preprocessing",
             ],
             outputs=[
                 "train_time",
@@ -43,7 +32,7 @@ epoch_pipeline = pipeline(
                 "loss",
                 "test_data_loader",
                 "device",
-                "data_preprocess",
+                "preprocessing",
                 "train_av_loss_metrics",
             ],
             outputs=["test_time", "test_train_av_loss_metrics", "y_true", "y_pred"],

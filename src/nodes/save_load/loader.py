@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import torch
-from src import EXPERIMENTS_DIR
 
+from src import EXPERIMENTS_DIR
 from src.common.const import CommonConst as cc
 from src.common.const import SaverLoaderConst as slc
 

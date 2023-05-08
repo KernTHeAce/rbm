@@ -1,33 +1,12 @@
-from kedro.io import DataCatalog, MemoryDataSet
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
+from nodes import output_concat
+from nodes.save_load import load_state_dict
 from nodes.test_train import common
 from nodes.test_train import loss_optim_device as lod
 from nodes.test_train import mnist
 from nodes.test_train import soccer as soc
-from src import DATA_DIR
-from common.const import SaverLoaderConst as slc
-from nodes import output_concat
-from nodes.save_load import load_state_dict
-
-preprocessing_data = DataCatalog(
-    {
-        "mnist_train_dataset_path": MemoryDataSet(f"{DATA_DIR}/mnist/train"),
-        "mnist_test_dataset_path": MemoryDataSet(f"{DATA_DIR}/mnist/test"),
-        "train_data_loader": MemoryDataSet(copy_mode="assign"),
-        "batch_size": MemoryDataSet(16),
-        "shuffle": MemoryDataSet(True),
-        "features": MemoryDataSet([28 * 28, 32]),
-        "is_cuda": MemoryDataSet(False),
-        "lr": MemoryDataSet(1e-3),
-        "experiment_name": MemoryDataSet("test_3"),
-        "checkpoint": MemoryDataSet(slc.LAST),
-        "new_experiment": MemoryDataSet(True),
-        "preprocessing": MemoryDataSet(lambda images: images[0].view(images[0].size()[0], -1)),
-    }
-)
-
 
 preprocessing_pipeline = pipeline(
     [
@@ -51,7 +30,6 @@ preprocessing_pipeline = pipeline(
             inputs=["mnist_test_dataset_path"],
             outputs=["mnist_train_dataset", "mnist_test_dataset"],
         ),
-
         node(
             func=common.dataset_to_dataloader,
             inputs=["mnist_train_dataset", "batch_size", "shuffle"],

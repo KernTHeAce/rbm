@@ -1,21 +1,10 @@
-from kedro.io import DataCatalog, MemoryDataSet
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
-from common.const import SaverLoaderConst as slc
 from nodes import save_load as sl
 from nodes.common import log_dict, output_concat
 from nodes.metrics import mse_metric
-
 from nodes.test_train import soccer as soc
-
-epoch_data = DataCatalog(
-    {
-        "checkpoint": MemoryDataSet(slc.LAST),
-        "new_experiment": MemoryDataSet(True),
-    }
-)
-
 
 epoch_pipeline = pipeline(
     [
