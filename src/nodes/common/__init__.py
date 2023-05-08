@@ -1,2 +1,1 @@
-from .log_dict import log_dict
-from .output_concat import output_concat
+from .utils import output_concat, log_dict

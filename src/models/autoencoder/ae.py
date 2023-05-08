@@ -25,15 +25,17 @@ class AE(BaseAE):
         for i, (in_features, out_features) in enumerate(zip(self.features[:-1], self.features[1:])):
             # encoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features))
             encoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features).double())
-            encoder_modules.append(nn.LeakyReLU())
+            # encoder_modules.append(nn.LeakyReLU())
+            encoder_modules.append(nn.ReLU())
         self.encoder = nn.Sequential(*encoder_modules)
 
         decoder_modules = []
         for i, (in_features, out_features) in enumerate(zip(self.features[::-1][:-1], self.features[::-1][1:])):
             # decoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features))
             decoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features).double())
-            decoder_modules.append(nn.LeakyReLU())
-        # decoder_modules[-1] = nn.Tanh()
+            # decoder_modules.append(nn.LeakyReLU())
+            decoder_modules.append(nn.ReLU())
+        decoder_modules[-1] = nn.Sigmoid()
         self.decoder = nn.Sequential(*decoder_modules)
 
     def forward(self, x):

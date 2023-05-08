@@ -1,4 +1,9 @@
 from src.common.const import MetricConst as mc
+from src import EXPERIMENTS_DIR
+
+
+def output_concat(**kwargs):
+    return kwargs
 
 
 def log_dict(**kwargs):

@@ -20,9 +20,13 @@ def rbm_linear_sequential_init(sequential, train_loader, device, preprocessing, 
                     data = preprocessing(data)
                 data = data.to(device).to(torch.double)
                 data = data if base_modules is None else base_modules(data)
+                # if data.isnan().any():
+                #     print(data)
                 if layer_index != 0:
                     pretrained_model = Sequential(*result_modules)
                     data = pretrained_model(data)
+                # if data.isnan().any():
+                #     print(data)
                 rbm.forward(data)
         result_modules.append(rbm.get_trained_layer())
         result_modules.append(layer[pc.FUNC])

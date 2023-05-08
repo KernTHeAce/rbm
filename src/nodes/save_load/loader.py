@@ -1,13 +1,14 @@
 from pathlib import Path
 
 import torch
+from src import EXPERIMENTS_DIR
 
 from src.common.const import CommonConst as cc
 from src.common.const import SaverLoaderConst as slc
 
 
-def load_state_dict(experiment_dir_path, checkpoint=slc.LAST, new_experiment: bool = True):
-    model_path = Path(experiment_dir_path, f"{checkpoint}.pt")
+def load_state_dict(experiment_name, checkpoint=slc.LAST, new_experiment: bool = True):
+    model_path = Path(EXPERIMENTS_DIR, experiment_name, f"{checkpoint}.pt")
     if not model_path.exists():
         if new_experiment:
             print(f"It is a new experiment and there is no checkpoint {checkpoint}" f"Loader will be mot work")

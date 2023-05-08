@@ -4,6 +4,8 @@ from typing import Any, Dict, List
 
 import torch
 
+
+
 from src.common.const import CommonConst as cc
 from src.common.const import MetricConst as mc
 from src.common.const import MetricsOutputValues as mov
@@ -35,6 +37,7 @@ def train_soccer_ae(
     time_start = time()
     model = model.train().to(device)
     average_loss = Average()
+    # with autograd.detect_anomaly():
     for data in train_loader:
         if len(data) != 2:
             input = data
@@ -42,7 +45,8 @@ def train_soccer_ae(
             input, _ = data
         if preprocessing is not None:
             input = preprocessing(input)
-        input = input.to(device)
+        input = input.to(device).to(torch.double)
+
         optimizer.zero_grad()
         input_encoded, input_decoded = model(input)
         loss = loss_fn(input_decoded, input)
@@ -74,7 +78,7 @@ def test_soccer_ae(model, loss_fn, test_loader, device, preprocessing=None, metr
 
             if preprocessing is not None:
                 input = preprocessing(input)
-            input = input.to(device)
+            input = input.to(device).to(torch.double)
             input_encoded, input_decoded = model(input)
             y_true.append(input)
             y_pred.append(input_decoded)

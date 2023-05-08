@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 import torch
 from torch.utils.data import DataLoader
-from torchvision import datasets
+from torchvision import datasets, transforms
 from torchvision.transforms import transforms
 
 from src.common.const import CommonConst as cc
@@ -15,6 +15,11 @@ from src.models.mnist_classifier.small import Classifier
 from src.models.rbm.manual_linear_rbm_initializer import rbm_linear_sequential_init
 from src.nodes.metrics import update_metrics
 
+transform = transforms.Compose([
+                               transforms.ToTensor(),
+                               transforms.Normalize(
+                                 (0.1307,), (0.3081,))
+                             ])
 
 def get_classifier_model(features: List[int] = cc.NONE, loaded_model: OrderedDict = cc.NONE):
     model = Classifier(features=features)
@@ -30,9 +35,16 @@ def rbm_init_classifier(model: Classifier, train_loader, device, is_model_initia
 
 
 def get_mnist_dataset(
-    torch_dataset_path: str, train: bool = True, download: bool = False, transform=transforms.ToTensor()
+    torch_dataset_path: str, train: bool = True, download: bool = False, transform=transform
 ) -> torch.utils.data.Dataset:
     return datasets.MNIST(root=torch_dataset_path, train=train, download=download, transform=transform)
+
+
+def get_small_mnist_datasets(
+    torch_dataset_path: str, train: bool = True, download: bool = False, transform=transforms.ToTensor()
+) -> (torch.utils.data.Dataset, torch.utils.data.Dataset):
+    dataset = datasets.MNIST(root=torch_dataset_path, train=train, download=download, transform=transform)
+    return torch.utils.data.random_split(dataset, [1500, 150, 58350])[:-1]
 
 
 def train_mnist_classifier(
@@ -70,7 +82,7 @@ def test_mnist_classifier(model, loss_fn, test_loader, device, preprocessing=Non
         y_pred, y_true = [], []
         for input, labels in test_loader:
             if preprocessing is not None:
-                input = prepr(input)
+                input = preprocessing(input)
             input = input.to(device).to(torch.double)
             output_pred = model(input)
             y_true.append(labels)
