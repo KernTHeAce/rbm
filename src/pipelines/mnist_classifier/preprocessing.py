@@ -11,18 +11,23 @@ preprocessing_pipeline = pipeline(
     [
         node(
             func=load_state_dict,
-            inputs=["experiment_path", "checkpoint", "new_experiment"],
+            inputs=["experiment_name", "checkpoint", "new_experiment"],
             outputs=["loaded_model", "loaded_optimizer", "loaded_epoch", "is_model_initialized"],
         ),
+        # node(
+        #     func=mnist.get_mnist_dataset,
+        #     inputs=["mnist_train_dataset_path"],
+        #     outputs="mnist_train_dataset",
+        # ),
+        # node(
+        #     func=mnist.get_mnist_dataset,
+        #     inputs=["mnist_test_dataset_path"],
+        #     outputs="mnist_test_dataset",
+        # ),
         node(
-            func=mnist.get_mnist_dataset,
-            inputs=["mnist_train_dataset_path"],
-            outputs="mnist_train_dataset",
-        ),
-        node(
-            func=mnist.get_mnist_dataset,
+            func=mnist.get_small_mnist_datasets,
             inputs=["mnist_test_dataset_path"],
-            outputs="mnist_test_dataset",
+            outputs=["mnist_train_dataset", "mnist_test_dataset"],
         ),
         node(
             func=common.dataset_to_dataloader,
@@ -55,6 +60,7 @@ preprocessing_pipeline = pipeline(
                 "epoch": "loaded_epoch",
                 "lr": "lr",
                 "preprocessing": "preprocessing",
+                "experiment_name": "experiment_name",
             },
             outputs="results",
         ),

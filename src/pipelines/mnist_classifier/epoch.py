@@ -3,7 +3,7 @@ from kedro.pipeline.node import node
 
 from nodes import save_load as sl
 from nodes.common import log_dict, output_concat
-from nodes.metrics import mse_metric
+from nodes import metrics
 from nodes.test_train import mnist
 
 epoch_pipeline = pipeline(
@@ -20,7 +20,7 @@ epoch_pipeline = pipeline(
             ],
             outputs=[
                 "train_time",
-                "train_av_loss_metrics",
+                "metrics_1",
                 "updated_optimizer",
                 "updated_model",
             ],
@@ -33,11 +33,12 @@ epoch_pipeline = pipeline(
                 "test_data_loader",
                 "device",
                 "preprocessing",
-                "train_av_loss_metrics",
+                "metrics_1",
             ],
-            outputs=["test_time", "test_train_av_loss_metrics", "y_true", "y_pred"],
+            outputs=["test_time", "metrics_2", "y_true", "y_pred"],
         ),
-        node(func=mse_metric, inputs=["y_true", "y_pred", "test_train_av_loss_metrics"], outputs="metrics"),
+        node(func=metrics.mse_metric, inputs=["y_true", "y_pred", "metrics_2"], outputs="metrics_3"),
+        node(func=metrics.mse_metric, inputs=["y_true", "y_pred", "metrics_3"], outputs="metrics"),
         node(
             func=sl.save_state_dict,
             inputs=["experiment_name", "metrics", "updated_model", "updated_optimizer", "epoch"],

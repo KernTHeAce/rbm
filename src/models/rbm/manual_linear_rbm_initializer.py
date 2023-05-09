@@ -16,18 +16,19 @@ def rbm_linear_sequential_init(sequential, train_loader, device, preprocessing, 
         rbm = RBMManualLinearCR(layer=layer[pc.LAYER], f=layer[pc.FUNC], device=device)
         for epoch in range(epochs):
             for data in train_loader:
+                if len(data) != 2:
+                    input = data
+                else:
+                    input, _ = data
                 if preprocessing and preprocessing != cc.NONE:
-                    data = preprocessing(data)
-                data = data.to(device).to(torch.double)
-                data = data if base_modules is None else base_modules(data)
-                # if data.isnan().any():
-                #     print(data)
+                    input = preprocessing(input)
+                input = input.to(device).to(torch.double)
+                input = input if base_modules is None else base_modules(data)
                 if layer_index != 0:
                     pretrained_model = Sequential(*result_modules)
-                    data = pretrained_model(data)
-                # if data.isnan().any():
-                #     print(data)
-                rbm.forward(data)
+                    input = pretrained_model(input)
+                rbm.forward(input)
         result_modules.append(rbm.get_trained_layer())
-        result_modules.append(layer[pc.FUNC])
+        if layer[pc.FUNC]:
+            result_modules.append(layer[pc.FUNC])
     return Sequential(*result_modules)

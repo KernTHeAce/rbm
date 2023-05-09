@@ -4,7 +4,7 @@ from preprocessing import preprocessing_pipeline
 from common.const import SaverLoaderConst as slc
 from common.pipelines import common_pipeline
 from pipelines.mnist_classifier.epoch import epoch_pipeline
-from src import DATA_DIR, EXPERIMENTS_DIR
+from src import DATA_DIR
 
 data = DataCatalog(
     {
@@ -16,10 +16,11 @@ data = DataCatalog(
         "features": MemoryDataSet([28 * 28, 100, 50, 10]),
         "is_cuda": MemoryDataSet(False),
         "lr": MemoryDataSet(1e-3),
-        "experiment_path": MemoryDataSet(f"{EXPERIMENTS_DIR}/test_2"),
+        "experiment_name": MemoryDataSet(f"test_2"),
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
-        "preprocessing": MemoryDataSet(lambda images: images.view(images.size()[0], -1)),
+        # "preprocessing": MemoryDataSet(lambda images: images[0].view(images[0].size()[0], -1)),
+        "preprocessing": MemoryDataSet(lambda img: img.view(-1, 28*28)),
     }
 )
 

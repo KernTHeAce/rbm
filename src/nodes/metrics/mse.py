@@ -1,28 +1,10 @@
 from typing import Any, Dict
 
-import torch
-
 from src.common.const import MetricConst as mc
 from src.common.const import MetricsOutputValues as mov
-from src.nodes.metrics.tools import update_metrics
 
-
-def data_preprocess(data: list):
-    result = None
-    for item in data:
-        if len(item.shape) == 2:
-            for i in item:
-                if result is None:
-                    result = torch.clone(i)
-                else:
-                    result = torch.cat((result, i), 0)
-        elif len(item.shape) == 1:
-            if result is None:
-                result = torch.clone(item)
-            else:
-                result = torch.cat((result, item), 0)
-
-    return result
+from .tools import update_metrics
+from .tools import data_preprocess
 
 
 def mse_metric(y_true, y_pred, metrics: Dict[str, Any] = None) -> Dict[str, Dict[str, Any]]:

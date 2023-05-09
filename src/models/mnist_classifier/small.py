@@ -7,7 +7,6 @@ class Classifier(nn.Module):
         self.features = features
         modules = []
         for i, (in_features, out_features) in enumerate(zip(self.features[:-1], self.features[1:])):
-            print(f"{in_features} - {out_features}")
             modules.append(nn.Linear(in_features=in_features, out_features=out_features).double())
             modules.append(nn.ReLU())
         del modules[-1]
