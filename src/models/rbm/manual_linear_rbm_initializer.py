@@ -23,7 +23,7 @@ def rbm_linear_sequential_init(sequential, train_loader, device, preprocessing, 
                 if preprocessing and preprocessing != cc.NONE:
                     input = preprocessing(input)
                 input = input.to(device).to(torch.double)
-                input = input if base_modules is None else base_modules(data)
+                input = input if base_modules is None else base_modules(input)
                 if layer_index != 0:
                     pretrained_model = Sequential(*result_modules)
                     input = pretrained_model(input)

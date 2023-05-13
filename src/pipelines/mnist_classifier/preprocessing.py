@@ -42,12 +42,13 @@ preprocessing_pipeline = pipeline(
         node(func=lod.get_device, inputs="is_cuda", outputs="device"),
         node(func=mnist.get_classifier_model, inputs=["features", "loaded_model"], outputs="model"),
         node(func=lod.get_cross_entropy_loss, inputs=None, outputs="loss"),
-        node(func=lod.get_adam_optimizer, inputs=["model", "lr"], outputs="initialized_optimizer"),
+
         node(
             func=mnist.rbm_init_classifier,
             inputs=["model", "train_data_loader", "device", "is_model_initialized", "preprocessing"],
             outputs="initialized_model",
         ),
+        node(func=lod.get_adam_optimizer, inputs=["model", "lr"], outputs="initialized_optimizer"),
         node(
             func=output_concat,
             inputs={

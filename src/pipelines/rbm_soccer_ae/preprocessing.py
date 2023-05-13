@@ -27,16 +27,16 @@ preprocessing_pipeline = pipeline(
         node(func=lod.get_device, inputs="is_cuda", outputs="device"),
         node(func=soc.get_ae_model, inputs=["features", "loaded_model"], outputs="model"),
         node(func=lod.get_mse_loss, inputs=None, outputs="loss"),
-        node(func=lod.get_adam_optimizer, inputs=["model", "lr"], outputs="initialized_optimizer"),
         node(
             func=soc.rbm_init_ae,
             inputs=["model", "train_data_loader", "device", "is_model_initialized", "preprocessing"],
             outputs="initialized_model",
         ),
+        node(func=lod.get_adam_optimizer, inputs=["model", "lr", "loaded_optimizer"], outputs="initialized_optimizer"),
         node(
             func=output_concat,
             inputs={
-                "initialized_model": "initialized_model",
+                "initialized_model": "model",
                 "initialized_optimizer": "initialized_optimizer",
                 "device": "device",
                 "train_data_loader": "train_data_loader",

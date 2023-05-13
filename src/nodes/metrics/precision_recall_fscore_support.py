@@ -3,7 +3,7 @@ from sklearn.metrics import precision_recall_fscore_support
 from src.common.const import MetricConst as mc
 from src.common.const import MetricsOutputValues as mov
 
-from .tools import update_metrics
+from .tools import update_metrics, data_preprocess
 
 
 def per_label(y_true, y_pred, labels, metrics):
@@ -32,24 +32,22 @@ def per_label(y_true, y_pred, labels, metrics):
 
 
 def average(y_true, y_pred, metrics, param: str = "weighted"):
-    precision, recall, f1, support = precision_recall_fscore_support(
+    y_true = data_preprocess(y_true)
+    y_pred = data_preprocess(y_pred)
+    precision, recall, f1, _ = precision_recall_fscore_support(
         y_true=y_true, y_pred=y_pred, average=param
     )
     data = {
         mov.PRECISION: {
-            mc.VALUE: precision,
+            mc.VALUE: precision.item(),
             mc.BEST: mc.UP,
         },
         mov.RECALL: {
-            mc.VALUE: recall,
+            mc.VALUE: recall.item(),
             mc.BEST: mc.UP,
         },
         mov.F1: {
-            mc.VALUE: f1,
-            mc.BEST: mc.UP,
-        },
-        mov.SUPPORT: {
-            mc.VALUE: support,
+            mc.VALUE: f1.item(),
             mc.BEST: mc.UP,
         },
     }

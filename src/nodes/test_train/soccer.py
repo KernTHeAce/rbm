@@ -36,6 +36,7 @@ def train_soccer_ae(
     model = model.train().to(device)
     average_loss = Average()
     # with autograd.detect_anomaly():
+    # optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     for data in train_loader:
         if len(data) != 2:
             input = data

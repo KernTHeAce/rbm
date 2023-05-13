@@ -11,15 +11,20 @@ data = DataCatalog(
         "mnist_train_dataset_path": MemoryDataSet(f"{DATA_DIR}/mnist/train"),
         "mnist_test_dataset_path": MemoryDataSet(f"{DATA_DIR}/mnist/test"),
         "train_data_loader": MemoryDataSet(copy_mode="assign"),
+        "model": MemoryDataSet(copy_mode="assign"),
+        "initialized_model": MemoryDataSet(copy_mode="assign"),
+        "initialized_optimizer": MemoryDataSet(copy_mode="assign"),
+        "loaded_model": MemoryDataSet(copy_mode="assign"),
+        "loaded_optimizer": MemoryDataSet(copy_mode="assign"),
         "batch_size": MemoryDataSet(16),
         "shuffle": MemoryDataSet(True),
-        "features": MemoryDataSet([28 * 28, 32]),
+        "features": MemoryDataSet([28 * 28, 800, 800, 10]),
         "is_cuda": MemoryDataSet(False),
-        "lr": MemoryDataSet(1e-3),
+        "lr": MemoryDataSet(1e-2),
         "experiment_name": MemoryDataSet("test_3"),
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
-        "preprocessing": MemoryDataSet(lambda images: images[0].view(images[0].size()[0], -1)),
+        "preprocessing": MemoryDataSet(lambda img: img.view(-1, 28*28)),
     }
 )
 

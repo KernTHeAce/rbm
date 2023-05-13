@@ -37,8 +37,8 @@ epoch_pipeline = pipeline(
             ],
             outputs=["test_time", "metrics_2", "y_true", "y_pred"],
         ),
-        node(func=metrics.mse_metric, inputs=["y_true", "y_pred", "metrics_2"], outputs="metrics_3"),
-        node(func=metrics.mse_metric, inputs=["y_true", "y_pred", "metrics_3"], outputs="metrics"),
+        # node(func=metrics.mse_metric, inputs=["y_true", "y_pred", "metrics_2"], outputs="metrics_3"),
+        node(func=metrics.average, inputs=["y_true", "y_pred", "metrics_2"], outputs="metrics"),
         node(
             func=sl.save_state_dict,
             inputs=["experiment_name", "metrics", "updated_model", "updated_optimizer", "epoch"],

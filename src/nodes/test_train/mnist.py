@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 import torch
 from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
+from torchvision import datasets
 from torchvision.transforms import transforms
 
 from src.common.const import CommonConst as cc
@@ -15,7 +15,10 @@ from src.models.mnist_classifier.small import Classifier
 from src.models.rbm.manual_linear_rbm_initializer import rbm_linear_sequential_init
 from src.nodes.metrics import update_metrics
 
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,)),])
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    # transforms.Normalize((0.5,), (0.5,)),
+])
 
 
 def get_classifier_model(features: List[int] = cc.NONE, loaded_model: OrderedDict = cc.NONE):
@@ -26,8 +29,8 @@ def get_classifier_model(features: List[int] = cc.NONE, loaded_model: OrderedDic
 
 
 def rbm_init_classifier(model: Classifier, train_loader, device, is_model_initialized, preprocessing):
-    if not is_model_initialized:
-        model.seq = rbm_linear_sequential_init(model.seq, train_loader, device, preprocessing)
+    # if not is_model_initialized:
+    #     model.seq = rbm_linear_sequential_init(model.seq, train_loader, device, preprocessing)
     return model
 
 
@@ -47,19 +50,21 @@ def get_small_mnist_datasets(
 def train_mnist_classifier(
     model, optimizer, loss_fn, train_loader, device, preprocessing=None, metrics: Dict[str, Any] = None
 ):
+    # from .test import test_optimizer
     time_start = time()
     model = model.train().to(device)
+
+    test_optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     average_loss = Average()
     for input, labels in train_loader:
         if preprocessing is not None:
             input = preprocessing(input)
         input = input.to(device).to(torch.double)
-        optimizer.zero_grad()
-        output_pred = model(input)
-        loss = loss_fn(output_pred, labels)
-
+        test_optimizer.zero_grad()
+        output = model(input)
+        loss = loss_fn(output, labels)
         loss.backward()
-        optimizer.step()
+        test_optimizer.step()
         average_loss.add(loss.item())
     time_end = time() - time_start
     data = {
@@ -68,7 +73,7 @@ def train_mnist_classifier(
             mc.BEST: mc.DOWN,
         },
     }
-    return time_end, update_metrics(metrics, data), optimizer, model
+    return time_end, update_metrics(metrics, data), test_optimizer, model
 
 
 def test_mnist_classifier(model, loss_fn, test_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):
@@ -85,7 +90,7 @@ def test_mnist_classifier(model, loss_fn, test_loader, device, preprocessing=Non
             y_true.append(labels)
             res = []
             for batch in output_pred:
-                res.append(torch.argmin(batch).item())
+                res.append(torch.argmax(batch).item())
             y_pred.append(torch.tensor(res))
             loss = loss_fn(output_pred, labels)
             average_loss.add(loss.item())
