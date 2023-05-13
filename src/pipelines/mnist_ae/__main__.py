@@ -18,7 +18,7 @@ data = DataCatalog(
         "loaded_optimizer": MemoryDataSet(copy_mode="assign"),
         "batch_size": MemoryDataSet(16),
         "shuffle": MemoryDataSet(True),
-        "features": MemoryDataSet([28 * 28, 800, 800, 10]),
+        "features": MemoryDataSet([28 * 28, 50, 10]),
         "is_cuda": MemoryDataSet(False),
         "lr": MemoryDataSet(1e-2),
         "experiment_name": MemoryDataSet("test_3"),
