@@ -39,8 +39,8 @@ class SequentialParser:
                 if i + 1 != len(list_modules) and type(list_modules[i + 1]) in self.layer_activation:
                     layer_act[pc.FUNC] = list_modules[i + 1]
                     i += 1
-                else:
-                    layer_act[pc.FUNC] = None
+                # else:
+                #     layer_act[pc.FUNC] = None
             elif type(list_modules[i]) in self.layer_types_no_param:
                 layer_act[pc.LAYER_FN] = list_modules[i]
             else:

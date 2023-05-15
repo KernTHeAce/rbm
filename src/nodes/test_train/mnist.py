@@ -29,8 +29,8 @@ def get_classifier_model(features: List[int] = cc.NONE, loaded_model: OrderedDic
 
 
 def rbm_init_classifier(model: Classifier, train_loader, device, is_model_initialized, preprocessing):
-    # if not is_model_initialized:
-    #     model.seq = rbm_linear_sequential_init(model.seq, train_loader, device, preprocessing)
+    if not is_model_initialized:
+        model.seq = rbm_linear_sequential_init(model.seq, train_loader, device, preprocessing)
     return model
 
 
