@@ -9,9 +9,9 @@ from torchvision.transforms import transforms
 
 from src.common.const import CommonConst as cc
 from src.common.const import MetricConst as mc
+from src.common.const import MetricsOutputValues as mov
 from src.common.const import RBMInitTypes as rit
 from src.common.const import RBMTypes as rt
-from src.common.const import MetricsOutputValues as mov
 from src.common.utils.average import Average
 from src.models.mnist_classifier.small import Classifier
 from src.models.rbm.manual_linear_rbm_initializer import rbm_linear_sequential_init
@@ -33,14 +33,14 @@ def get_classifier_model(features: List[int] = cc.NONE, loaded_model: OrderedDic
 
 
 def rbm_init_classifier(
-        model,
-        train_loader,
-        device,
-        is_model_initialized,
-        preprocessing,
-        rbm_epoch=1,
-        rbm_type=rt.RBM,
-        rbm_init_type=rit.IN_LAYER_ORDER,
+    model,
+    train_loader,
+    device,
+    is_model_initialized,
+    preprocessing,
+    rbm_epoch=1,
+    rbm_type=rt.RBM,
+    rbm_init_type=rit.IN_LAYER_ORDER,
 ):
     if not is_model_initialized:
         model.seq = rbm_linear_sequential_init(

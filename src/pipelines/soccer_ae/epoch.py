@@ -3,8 +3,8 @@ from kedro.pipeline.node import node
 
 from src.nodes import common
 from src.nodes import save_load as sl
-from src.nodes.test_train import soccer as soc
 from src.nodes.metrics import mse_metric
+from src.nodes.test_train import soccer as soc
 
 epoch_pipeline = pipeline(
     [

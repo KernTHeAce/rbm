@@ -29,5 +29,5 @@ config = {
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
         "preprocessing": MemoryDataSet(lambda img: img.view(-1, 28 * 28)),
-    }
+    },
 }

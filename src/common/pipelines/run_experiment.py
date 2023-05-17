@@ -1,5 +1,5 @@
-from src.common.pipelines import run_pipeline
 from src.common.const import RBMTypes as rt
+from src.common.pipelines import run_pipeline
 
 
 def _get_experiment_name(prefix, new_data, postfix=""):

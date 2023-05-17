@@ -1,9 +1,9 @@
+from kedro.extras.datasets.pandas import CSVDataSet
 from kedro.io import MemoryDataSet
 
 from src import DATA_DIR
 from src.common.const import PipelineConfigConst as pcc
 from src.common.const import SaverLoaderConst as slc
-from kedro.extras.datasets.pandas import CSVDataSet
 
 from .epoch import epoch_pipeline
 from .preprocessing import preprocessing_pipeline
@@ -30,5 +30,5 @@ config = {
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
         "preprocessing": MemoryDataSet(lambda x: x),
-    }
+    },
 }

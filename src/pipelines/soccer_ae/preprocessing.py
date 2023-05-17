@@ -1,11 +1,11 @@
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
+from src.nodes import output_concat
+from src.nodes.save_load import load_state_dict
 from src.nodes.test_train import common
 from src.nodes.test_train import loss_optim_device as lod
 from src.nodes.test_train import soccer as soc
-from src.nodes import output_concat
-from src.nodes.save_load import load_state_dict
 
 preprocessing_pipeline = pipeline(
     [
