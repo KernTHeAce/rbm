@@ -1,9 +1,9 @@
 from kedro.io import DataCatalog
 from kedro.runner import SequentialRunner
 
-from common.const import CommonConst as cc
-from common.const import SaverLoaderConst as slc
-from common.utils import update_datacatalog
+from src.common.const import CommonConst as cc
+from src.common.const import SaverLoaderConst as slc
+from src.common.utils import update_datacatalog
 
 runner = SequentialRunner()
 

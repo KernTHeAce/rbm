@@ -1,12 +1,12 @@
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
-from nodes import output_concat
-from nodes.save_load import load_state_dict
-from nodes.test_train import common
-from nodes.test_train import loss_optim_device as lod
-from nodes.test_train import mnist
-from nodes.test_train import soccer as soc
+from src.nodes import output_concat
+from src.nodes.save_load import load_state_dict
+from src.nodes.test_train import common
+from src.nodes.test_train import loss_optim_device as lod
+from src.nodes.test_train import mnist
+from src.nodes.test_train import soccer as soc
 
 preprocessing_pipeline = pipeline(
     [
@@ -46,7 +46,7 @@ preprocessing_pipeline = pipeline(
         node(func=lod.get_adam_optimizer, inputs=["model", "lr"], outputs="initialized_optimizer"),
         node(
             func=soc.rbm_init_ae,
-            inputs=["model", "train_data_loader", "device", "is_model_initialized", "preprocessing"],
+            inputs=["model", "train_data_loader", "device", "is_model_initialized", "preprocessing", "rbm_epoch", "rbm_type", "rbm_init_type"],
             outputs="initialized_model",
         ),
         node(
@@ -62,6 +62,9 @@ preprocessing_pipeline = pipeline(
                 "lr": "lr",
                 "preprocessing": "preprocessing",
                 "experiment_name": "experiment_name",
+                "rbm_epoch": "rbm_epoch",
+                "rbm_init_type": "rbm_init_type",
+                "rbm_type": "rbm_type",
             },
             outputs="results",
         ),

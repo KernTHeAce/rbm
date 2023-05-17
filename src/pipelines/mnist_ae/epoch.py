@@ -1,10 +1,10 @@
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
-from nodes import save_load as sl
-from nodes.common import log_dict, output_concat
-from nodes.metrics import mse_metric
-from nodes.test_train import soccer as soc
+from src.nodes import save_load as sl
+from src.nodes.common import log_dict, output_concat
+from src.nodes.metrics import mse_metric
+from src.nodes.test_train import soccer as soc
 
 epoch_pipeline = pipeline(
     [
@@ -48,12 +48,11 @@ epoch_pipeline = pipeline(
             inputs={
                 "experiment_name": "experiment_name",
                 "metrics": "metrics",
-                "model": "initialized_model",
-                "optimizer": "initialized_optimizer",
-                "device": "device",
-                "loss": "loss",
                 "epoch": "epoch",
                 "lr": "lr",
+                "rbm_epoch": "rbm_epoch",
+                "rbm_init_type": "rbm_init_type",
+                "rbm_type": "rbm_type"
             },
             outputs="none_2",
         ),
