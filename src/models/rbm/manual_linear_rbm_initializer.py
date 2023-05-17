@@ -1,6 +1,7 @@
+from typing import Any, Dict, List
+
 import torch
 from torch.nn import Sequential
-from typing import List, Dict, Any
 
 from src.common.const import CommonConst as cc
 from src.common.const import ParserConst as pc
@@ -11,7 +12,16 @@ from src.common.utils.sequential_parser import SequentialParser
 from .rbm_manual_linear import RBMManualLinearCR
 
 
-def rbm_linear_sequential_init(sequential, train_loader, device, preprocessing, epochs, rbm_type: str = rt.RBM, rbm_init_type: str = rit.IN_LAYER_ORDER, base_modules=None):
+def rbm_linear_sequential_init(
+    sequential,
+    train_loader,
+    device,
+    preprocessing,
+    epochs,
+    rbm_type: str = rt.RBM,
+    rbm_init_type: str = rit.IN_LAYER_ORDER,
+    base_modules=None,
+):
     rbm = RBMManualLinearCR
     if rbm_type == rt.NO_RBM:
         return sequential
@@ -19,12 +29,18 @@ def rbm_linear_sequential_init(sequential, train_loader, device, preprocessing, 
         raise Exception("There is no RRRBM here)))")
 
     if rbm_init_type == rit.IN_DATA_ORDER:
-        return rbm_linear_sequential_init_in_data_order(sequential, train_loader, device, preprocessing, epochs, rbm, base_modules)
+        return rbm_linear_sequential_init_in_data_order(
+            sequential, train_loader, device, preprocessing, epochs, rbm, base_modules
+        )
     elif rbm_init_type == rit.IN_LAYER_ORDER:
-        return rbm_linear_sequential_init_in_layer_order(sequential, train_loader, device, preprocessing, epochs, rbm, base_modules)
+        return rbm_linear_sequential_init_in_layer_order(
+            sequential, train_loader, device, preprocessing, epochs, rbm, base_modules
+        )
 
 
-def rbm_linear_sequential_init_in_data_order(sequential, train_loader, device, preprocessing, epochs, rbm_type, base_modules=None):
+def rbm_linear_sequential_init_in_data_order(
+    sequential, train_loader, device, preprocessing, epochs, rbm_type, base_modules=None
+):
     parser = SequentialParser()
     layers = parser.get_layers(sequential)
     result_modules = []
@@ -50,7 +66,9 @@ def rbm_linear_sequential_init_in_data_order(sequential, train_loader, device, p
     return Sequential(*result_modules)
 
 
-def rbm_linear_sequential_init_in_layer_order(sequential, train_loader, device, preprocessing, epochs, rbm_type, base_modules=None):
+def rbm_linear_sequential_init_in_layer_order(
+    sequential, train_loader, device, preprocessing, epochs, rbm_type, base_modules=None
+):
     parser = SequentialParser()
     layers = parser.get_layers(sequential)
     for epoch in range(epochs):

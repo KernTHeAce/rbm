@@ -46,7 +46,16 @@ preprocessing_pipeline = pipeline(
         node(func=lod.get_adam_optimizer, inputs=["model", "lr"], outputs="initialized_optimizer"),
         node(
             func=soc.rbm_init_ae,
-            inputs=["model", "train_data_loader", "device", "is_model_initialized", "preprocessing", "rbm_epoch", "rbm_type", "rbm_init_type"],
+            inputs=[
+                "model",
+                "train_data_loader",
+                "device",
+                "is_model_initialized",
+                "preprocessing",
+                "rbm_epoch",
+                "rbm_type",
+                "rbm_init_type",
+            ],
             outputs="initialized_model",
         ),
         node(

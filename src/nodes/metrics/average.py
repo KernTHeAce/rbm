@@ -2,6 +2,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 from .const import MetricAverageValues as av
 
+
 class MetricAverage:
     def __call__(self, y_true, y_pred, average: str = av.WEIGHTED):
         """
@@ -44,7 +45,5 @@ class MetricAverage:
                 [n_unique_labels]
                 The number of occurrences of each label in ``y_true``.
         """
-        precision, recall, f1, support = precision_recall_fscore_support(
-            y_true=y_true, y_pred=y_pred, average=average
-        )
+        precision, recall, f1, support = precision_recall_fscore_support(y_true=y_true, y_pred=y_pred, average=average)
         return precision, recall, f1, support

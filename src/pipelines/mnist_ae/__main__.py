@@ -1,8 +1,8 @@
-from src.common.pipelines import run_pipeline
-from src.common.const import RBMInitTypes as rit
-from src.common.const import RBMTypes as rt
 import argparse
 
+from src.common.const import RBMInitTypes as rit
+from src.common.const import RBMTypes as rt
+from src.common.pipelines import run_pipeline
 from src.pipelines import mnist_ae
 
 print(mnist_ae.__name__)
@@ -22,14 +22,9 @@ def run_experiments(max_epoch):
     for rbm_epoch in RBM_EPOCHS:
         for rbm_init_type in RBM_INIT_TYPES:
             for rbm_type in RBM_TYPES:
-                new_config = {
-                    "rbm_epoch": rbm_epoch,
-                    "rbm_init_type": rbm_init_type,
-                    "rbm_type": rbm_type
-                }
+                new_config = {"rbm_epoch": rbm_epoch, "rbm_init_type": rbm_init_type, "rbm_type": rbm_type}
                 new_config["experiment_name"] = get_name("mnist_ae", new_config)
                 run_pipeline(mnist_ae.config, new_config, max_epoch=max_epoch)
-
 
 
 def parse():

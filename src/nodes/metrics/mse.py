@@ -3,8 +3,7 @@ from typing import Any, Dict
 from src.common.const import MetricConst as mc
 from src.common.const import MetricsOutputValues as mov
 
-from .tools import update_metrics
-from .tools import data_preprocess
+from .tools import data_preprocess, update_metrics
 
 
 def mse_metric(y_true, y_pred, metrics: Dict[str, Any] = None) -> Dict[str, Dict[str, Any]]:

@@ -1,9 +1,9 @@
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
+from nodes import metrics
 from nodes import save_load as sl
 from nodes.common import log_dict, output_concat
-from nodes import metrics
 from nodes.test_train import mnist
 
 epoch_pipeline = pipeline(

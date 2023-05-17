@@ -52,7 +52,7 @@ epoch_pipeline = pipeline(
                 "lr": "lr",
                 "rbm_epoch": "rbm_epoch",
                 "rbm_init_type": "rbm_init_type",
-                "rbm_type": "rbm_type"
+                "rbm_type": "rbm_type",
             },
             outputs="none_2",
         ),

@@ -15,10 +15,12 @@ from src.models.mnist_classifier.small import Classifier
 from src.models.rbm.manual_linear_rbm_initializer import rbm_linear_sequential_init
 from src.nodes.metrics import update_metrics
 
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    # transforms.Normalize((0.5,), (0.5,)),
-])
+transform = transforms.Compose(
+    [
+        transforms.ToTensor(),
+        # transforms.Normalize((0.5,), (0.5,)),
+    ]
+)
 
 
 def get_classifier_model(features: List[int] = cc.NONE, loaded_model: OrderedDict = cc.NONE):

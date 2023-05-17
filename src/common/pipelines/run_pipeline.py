@@ -1,6 +1,7 @@
-from src.common.pipelines import common_pipeline
-from src.common.const import PipelineConfigConst as pcc
 from kedro.io import DataCatalog, MemoryDataSet
+
+from src.common.const import PipelineConfigConst as pcc
+from src.common.pipelines import common_pipeline
 
 
 def run_pipeline(config, updated_data=None, max_epoch=20):
@@ -18,5 +19,5 @@ def run_pipeline(config, updated_data=None, max_epoch=20):
         epoch_pipeline=config[pcc.EPOCH],
         postrocessing_pipeline=config[pcc.POSTPROCESSING],
         data=data,
-        max_epoch=max_epoch
+        max_epoch=max_epoch,
     )

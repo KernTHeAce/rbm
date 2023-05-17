@@ -24,7 +24,7 @@ data = DataCatalog(
         "experiment_name": MemoryDataSet(f"test_2"),
         "checkpoint": MemoryDataSet(slc.LAST),
         "new_experiment": MemoryDataSet(True),
-        "preprocessing": MemoryDataSet(lambda img: img.view(-1, 28*28)),
+        "preprocessing": MemoryDataSet(lambda img: img.view(-1, 28 * 28)),
     }
 )
 

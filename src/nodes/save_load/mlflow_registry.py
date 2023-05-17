@@ -19,16 +19,16 @@ params = ["rbm_epoch", "rbm_init_type", "rbm_type", "lr"]
 
 def mlflow_registry(**kwargs):
     name = kwargs["experiment_name"]
-    epoch = kwargs['epoch']
+    epoch = kwargs["epoch"]
     runs_names = mlflow.search_runs(experiment_names=["Default"])
     if not len(runs_names):
         run_id = None
     else:
         run_id = get_id_by_name(runs_names, name)
     with mlflow.start_run(
-            run_name=name,
-            run_id=run_id,
-            experiment_id='0',
+        run_name=name,
+        run_id=run_id,
+        experiment_id="0",
     ):
         if run_id is None:
             for param in params:
