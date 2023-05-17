@@ -1,10 +1,10 @@
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
-from nodes import metrics
-from nodes import save_load as sl
-from nodes.common import log_dict, output_concat
-from nodes.test_train import mnist
+from src.nodes import metrics
+from src.nodes import save_load as sl
+from src.nodes.common import log_dict, output_concat
+from src.nodes.test_train import mnist
 
 epoch_pipeline = pipeline(
     [
@@ -37,7 +37,6 @@ epoch_pipeline = pipeline(
             ],
             outputs=["test_time", "metrics_2", "y_true", "y_pred"],
         ),
-        # node(func=metrics.mse_metric, inputs=["y_true", "y_pred", "metrics_2"], outputs="metrics_3"),
         node(func=metrics.average, inputs=["y_true", "y_pred", "metrics_2"], outputs="metrics"),
         node(
             func=sl.save_state_dict,
@@ -49,12 +48,11 @@ epoch_pipeline = pipeline(
             inputs={
                 "experiment_name": "experiment_name",
                 "metrics": "metrics",
-                "model": "initialized_model",
-                "optimizer": "initialized_optimizer",
-                "device": "device",
-                "loss": "loss",
                 "epoch": "epoch",
                 "lr": "lr",
+                "rbm_epoch": "rbm_epoch",
+                "rbm_init_type": "rbm_init_type",
+                "rbm_type": "rbm_type",
             },
             outputs="none_2",
         ),

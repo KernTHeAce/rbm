@@ -11,7 +11,7 @@ def load_state_dict(experiment_name, checkpoint=slc.LAST, new_experiment: bool =
     model_path = Path(EXPERIMENTS_DIR, experiment_name, f"{checkpoint}.pt")
     if not model_path.exists():
         if new_experiment:
-            print(f"It is a new experiment and there is no checkpoint {checkpoint}" f"Loader will be mot work")
+            print(f"New experiment: {experiment_name}")
             return cc.NONE, cc.NONE, cc.NONE, False
         else:
             raise Exception(f"There is no such file: {str(model_path)}")

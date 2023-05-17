@@ -12,6 +12,6 @@ if __name__ == "__main__":
         rbm_epochs=cd.RBM_EPOCHS,
         rbm_types=cd.RBM_TYPES,
         rbm_init_types=cd.RBM_INIT_TYPES,
-        prefix="mnist_ae",
-        postfix=""
+        prefix=args.prefix,
+        postfix=args.postfix
     )

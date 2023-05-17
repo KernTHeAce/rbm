@@ -1,9 +1,9 @@
 from kedro.pipeline import pipeline
 from kedro.pipeline.node import node
 
-from nodes.test_train import common
-from nodes.test_train import loss_optim_device as lod
-from nodes.test_train import soccer as soc
+from src.nodes.test_train import common
+from src.nodes.test_train import loss_optim_device as lod
+from src.nodes.test_train import soccer as soc
 from src.nodes import output_concat
 from src.nodes.save_load import load_state_dict
 
@@ -46,6 +46,9 @@ preprocessing_pipeline = pipeline(
                 "lr": "lr",
                 "preprocessing": "preprocessing",
                 "experiment_name": "experiment_name",
+                "rbm_epoch": "rbm_epoch",
+                "rbm_init_type": "rbm_init_type",
+                "rbm_type": "rbm_type",
             },
             outputs="results",
         ),
