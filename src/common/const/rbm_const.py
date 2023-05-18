@@ -11,4 +11,4 @@ class RBMInitTypes:
 class RBMTypes:
     RBM: str = "rbm"
     NO_RBM: str = "no_rbm"
-    RRRBM: str = "rrrbm"  # restricted rule rbm
+    CRRBM: str = "crrbm"  # commulative rule rbm

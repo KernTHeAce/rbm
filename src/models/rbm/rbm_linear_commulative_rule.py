@@ -18,22 +18,23 @@ from src.models.rbm.base_rbm import BaseRBM
 
 
 # TODO need to saving t_out to dbn for continue training by epoch_per_layer
-class RBMManualLinearCR(BaseRBM):
+class RBMLinearCR(BaseRBM):
     """Cumulative rule for Linear layer"""
 
     def __init__(
         self,
         layer,
-        input_shape=None,
         batch_size=1,
         f=nn.Tanh(),
         using_derivative=True,
         use_min_max=True,
         lr_min_max: Tuple[float, float] = None,
         t_out: torch.Tensor = None,
+        w_out: torch.Tensor = None,
+        commulative_rule: bool = False,
         device=torch.device("cuda:0"),
     ):
-        super(RBMManualLinearCR, self).__init__()
+        super(BaseRBM, self).__init__()
 
         assert isinstance(layer, nn.Linear)
 
@@ -42,7 +43,7 @@ class RBMManualLinearCR(BaseRBM):
         self.t_in = layer.bias.data.clone().to(device)
         self.w_in.requires_grad_(True)
         self.out_features, self.in_features = self.w_in.size()
-        self.w_out, self.t_out = self.init_param(t_out)
+        self.w_out, self.t_out = self.init_param(w_out, t_out, commulative_rule)
         self.f, self.f_ = self.activation(f, using_derivative)
         self.using_derivative = using_derivative
         self.use_min_max = use_min_max
@@ -53,14 +54,16 @@ class RBMManualLinearCR(BaseRBM):
         self.epoch_printed = -1
         self.grads = {}
 
-    def init_param(self, t_out: torch.Tensor = None):
+    def init_param(self, w_out, t_out, commulative_rule):
         stdv = 1.0 / sqrt(self.in_features)
-        # w = torch.Tensor(self.in_features, self.h_features).uniform_(-stdv, stdv).to(self.device)
-        # b = torch.Tensor(self.in_features).uniform_(-stdv, stdv).to(self.device)
-
         w = self.w_in.t().data.clone()
-        # w = self.w_in.rot90().data.clone()
-        b = torch.Tensor(self.in_features).uniform_(-stdv, stdv).to(self.device) if t_out is None else t_out
+        b = torch.Tensor(self.in_features).uniform_(-stdv, stdv).to(self.device).to(torch.double) if t_out is None else t_out
+        if commulative_rule:
+            w = (
+                torch.Tensor(self.in_features, self.out_features).uniform_(-stdv, stdv).to(self.device).to(torch.double)
+                if w_out is None
+                else w_out
+            )
         return w, b
 
     def adaptive_lr_no_bias(self, x0, y0, s_x1, x1, s_y1, y1):
@@ -106,19 +109,7 @@ class RBMManualLinearCR(BaseRBM):
             s_x1 = torch.matmul(y0, self.w_out.t())
             x1 = self.f(s_x1)
             s_y1 = torch.matmul(x1, self.w_in.t())
-            # s_x1.register_hook(self.save_grad('s_x1'))
-            # s_y1.register_hook(self.save_grad('s_y1'))
             y1 = self.f(s_y1)
-
-            # Gradients
-            # y1.sum().backward()
-            # with torch.no_grad():
-            #     if self.using_derivative:
-            #         w_in_grad = torch.matmul(((y1 - y0) * self.grads['s_y1']).t(), x1)
-            #         w_out_grad = torch.matmul(((x1 - x0) * self.grads['s_x1']).t(), y0)
-            #     else:
-            #         w_in_grad = torch.matmul(((y1 - y0) * 1.).t(), x1)
-            #         w_out_grad = torch.matmul(((x1 - x0) * 1.).t(), y0)
 
             if is_training:
                 w_in_grad = torch.matmul(((y1 - y0) * self.f_(s_y1)).t(), x1)
@@ -195,10 +186,6 @@ class RBMManualLinearCR(BaseRBM):
             lr_auto=lr_auto,
             lr_const=lr_const,
         )
-        # self.w_in = self.w_in - torch.matmul(lr_y, w_in_grad)
-        # self.t_in = self.t_in - torch.matmul(lr_y, t_in_grad)
-        # self.w_out = self.w_out - torch.matmul(lr_x, w_out_grad)
-        # self.t_out = self.t_out - torch.matmul(lr_x, t_out_grad)
         self.w_in = self.w_in - lr_y * w_in_grad
         self.t_in = self.t_in - lr_y * t_in_grad
         self.w_out = self.w_out - lr_x * w_out_grad
@@ -231,8 +218,6 @@ class RBMManualLinearCR(BaseRBM):
         if lr_auto:
             if not lr_const:
                 lr_x, lr_y = self.adaptive_lr_bias(x0=x0, y0=y0, s_x1=s_x1, x1=x1, s_y1=s_y1, y1=y1)
-                # if lr_x is not None or lr_y is not None:
-                #     lr_x, lr_y = (lr, lr)
             else:
                 lr_x, lr_y = (lr, lr)
         else:
@@ -241,9 +226,6 @@ class RBMManualLinearCR(BaseRBM):
 
     def adaptive_lr_bias(self, x0, y0, s_x1, x1, s_y1, y1):
         """For LeakyReLU function only"""
-
-        # if not isinstance(self.f, nn.LeakyReLU):
-        #     return None, None
 
         with torch.no_grad():
             rj = self.f_(s_y1)
@@ -261,9 +243,6 @@ class RBMManualLinearCR(BaseRBM):
 
     def adaptive_lr_bias_every(self, x0, y0, s_x1, x1, s_y1, y1):
         """For LeakyReLU function only"""
-
-        # if not isinstance(self.f, nn.LeakyReLU):
-        #     return None, None
 
         with torch.no_grad():
             rj = self.f_(s_y1)
@@ -299,13 +278,16 @@ class RBMManualLinearCR(BaseRBM):
         else:
             return self._forward_no_bias(x0, lr, lr_auto, is_training)
 
-    def get_trained_layer(self, get_bias: bool = False):
+    def get_trained_layer(self, get_bias: bool = False, get_weights: bool = False):
         layer = nn.Linear(in_features=self.in_features, out_features=self.out_features)
         layer.weight.data = self.w_in.data.clone()
         layer.bias.data = self.t_in.data.clone()
+        results = [layer]
         if get_bias:
-            return layer, self.t_out.data.clone()
-        return layer
+            results.append(self.t_out.data.clone())
+        if get_weights:
+            results.append(self.w_out.data.clone())
+        return tuple(results) if len(results) > 1 else layer
 
     def get_bias_out(self):
         return self.t_out.clone()
