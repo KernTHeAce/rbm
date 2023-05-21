@@ -13,6 +13,5 @@ class Classifier(nn.Module):
         self.seq = nn.Sequential(*modules)
 
     def forward(self, x):
-        # x = img.view(-1, 28*28)
         result = self.seq(x)
         return result

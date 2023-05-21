@@ -9,7 +9,7 @@ from src.nodes.test_train import soccer as soc
 epoch_pipeline = pipeline(
     [
         node(
-            func=soc.train_soccer_ae,
+            func=soc.train_ae,
             inputs=[
                 "initialized_model",
                 "initialized_optimizer",
@@ -26,7 +26,7 @@ epoch_pipeline = pipeline(
             ],
         ),
         node(
-            func=soc.test_soccer_ae,
+            func=soc.test_ae,
             inputs=[
                 "initialized_model",
                 "loss",

@@ -25,7 +25,7 @@ def _get_experiment_name(prefix, new_data, postfix=""):
     return f"{prefix}_{'_'.join(data)}_{postfix}"
 
 
-def run_experiment(config, max_epoch, rbm_epochs, rbm_init_types, rbm_types, prefix="", postfix=""):
+def run_rbm_experiment(config, max_epoch, rbm_epochs, rbm_init_types, rbm_types, prefix="", postfix=""):
     for rbm_type in rbm_types:
         if rbm_type == rt.NO_RBM:
             new_config = {"rbm_type": rbm_type}

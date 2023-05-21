@@ -17,14 +17,17 @@ def get_id_by_name(df, name):
 params = ["rbm_epoch", "rbm_init_type", "rbm_type", "lr"]
 
 
+def get_run_id(name):
+    runs_names = mlflow.search_runs(experiment_names=["Default"])
+    if not len(runs_names):
+        return None
+    return get_id_by_name(runs_names, name)
+
+
 def mlflow_registry(**kwargs):
     name = kwargs["experiment_name"]
     epoch = kwargs["epoch"]
-    runs_names = mlflow.search_runs(experiment_names=["Default"])
-    if not len(runs_names):
-        run_id = None
-    else:
-        run_id = get_id_by_name(runs_names, name)
+    run_id = get_run_id(name)
     with mlflow.start_run(
         run_name=name,
         run_id=run_id,
@@ -32,7 +35,8 @@ def mlflow_registry(**kwargs):
     ):
         if run_id is None:
             for param in params:
-                mlflow.log_param(param, kwargs[param])
+                if param in kwargs:
+                    mlflow.log_param(param, kwargs[param])
         for key, item in kwargs.items():
             if key in ["experiment_name", "epoch"]:
                 continue

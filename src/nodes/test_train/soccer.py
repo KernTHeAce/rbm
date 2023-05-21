@@ -49,14 +49,12 @@ def rbm_init_ae(
     return model
 
 
-def train_soccer_ae(
+def train_ae(
     model, optimizer, loss_fn, train_loader, device, preprocessing=None, metrics: Dict[str, Any] = None
 ):
     time_start = time()
     model = model.train().to(device)
     average_loss = Average()
-    # with autograd.detect_anomaly():
-    # optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     for data in train_loader:
         if len(data) != 2:
             input = data
@@ -83,7 +81,7 @@ def train_soccer_ae(
     return time_end, update_metrics(metrics, data), optimizer, model
 
 
-def test_soccer_ae(model, loss_fn, test_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):
+def test_ae(model, loss_fn, test_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):
     time_start = time()
     model = model.train().to(device)
     with torch.no_grad():

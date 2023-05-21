@@ -65,21 +65,20 @@ def get_small_mnist_datasets(
 def train_mnist_classifier(
     model, optimizer, loss_fn, train_loader, device, preprocessing=None, metrics: Dict[str, Any] = None
 ):
-    # from .test import test_optimizer
     time_start = time()
     model = model.train().to(device)
 
-    test_optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     average_loss = Average()
     for input, labels in train_loader:
         if preprocessing is not None:
             input = preprocessing(input)
         input = input.to(device).to(torch.double)
-        test_optimizer.zero_grad()
+        optimizer.zero_grad()
         output = model(input)
         loss = loss_fn(output, labels)
         loss.backward()
-        test_optimizer.step()
+        optimizer.step()
         average_loss.add(loss.item())
     time_end = time() - time_start
     data = {
@@ -88,7 +87,7 @@ def train_mnist_classifier(
             mc.BEST: mc.DOWN,
         },
     }
-    return time_end, update_metrics(metrics, data), test_optimizer, model
+    return time_end, update_metrics(metrics, data), optimizer, model
 
 
 def test_mnist_classifier(model, loss_fn, test_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):

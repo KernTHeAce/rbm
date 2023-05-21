@@ -23,8 +23,3 @@ class BaseAE(Module):
     def freeze(self):
         for param in self.parameters():
             param.required_grad = False
-
-    # TODO add code for set new encoder & decoder values
-    def from_dbn(self, trained_layers):
-        encoder = self.get_encoder()
-        decoder = self.get_decoder()

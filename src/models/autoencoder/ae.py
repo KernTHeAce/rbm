@@ -1,7 +1,7 @@
 from torch import nn
 from torch.nn import Module
 
-from src.models.base_ae import BaseAE
+from src.models.autoencoder.base_ae import BaseAE
 
 
 class AE(BaseAE):
@@ -23,17 +23,13 @@ class AE(BaseAE):
 
         encoder_modules = []
         for i, (in_features, out_features) in enumerate(zip(self.features[:-1], self.features[1:])):
-            # encoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features))
             encoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features).double())
-            # encoder_modules.append(nn.LeakyReLU())
             encoder_modules.append(nn.ReLU())
         self.encoder = nn.Sequential(*encoder_modules)
 
         decoder_modules = []
         for i, (in_features, out_features) in enumerate(zip(self.features[::-1][:-1], self.features[::-1][1:])):
-            # decoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features))
             decoder_modules.append(nn.Linear(in_features=in_features, out_features=out_features).double())
-            # decoder_modules.append(nn.LeakyReLU())
             decoder_modules.append(nn.ReLU())
         decoder_modules[-1] = nn.Sigmoid()
         self.decoder = nn.Sequential(*decoder_modules)
@@ -57,26 +53,3 @@ class AE(BaseAE):
 
     def __str__(self):
         return f"AE model with features: {self.features}"
-
-    # TODO move to BaseAE
-    def from_dbn(self, trained_layers):
-        encoder, decoder = [module for module in self.modules() if type(module) == nn.Sequential]
-        encoder = [module for module in encoder.modules()][1:]
-        decoder = [module for module in decoder.modules()][1:]
-        assert len(trained_layers) == len(encoder + decoder)
-
-        # First read encoded trained layers
-        i = 0
-        encoder_layers = nn.ModuleList()
-        while i < len(encoder):
-            encoder_layers.append(trained_layers[i])
-            i += 1
-
-        # Then read decoded trained layers
-        decoder_layers = nn.ModuleList()
-        while i < len(trained_layers):
-            decoder_layers.append(trained_layers[i])
-            i += 1
-
-        self.encoder = nn.Sequential(*encoder_layers)
-        self.decoder = nn.Sequential(*decoder_layers)

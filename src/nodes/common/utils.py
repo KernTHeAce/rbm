@@ -1,4 +1,3 @@
-from src import EXPERIMENTS_DIR
 from src.common.const import MetricConst as mc
 
 
