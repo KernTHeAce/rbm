@@ -50,9 +50,6 @@ class RBMLinearCR(BaseRBM):
         self.lr_min_max = lr_min_max if lr_min_max else (1e-8, 1e-2)
         self.batch_size = batch_size
 
-        # TODO
-        self.epoch_printed = -1
-        self.grads = {}
 
     def init_param(self, w_out, t_out, commulative_rule):
         stdv = 1.0 / sqrt(self.in_features)
@@ -288,6 +285,3 @@ class RBMLinearCR(BaseRBM):
         if get_weights:
             results.append(self.w_out.data.clone())
         return tuple(results) if len(results) > 1 else layer
-
-    def get_bias_out(self):
-        return self.t_out.clone()

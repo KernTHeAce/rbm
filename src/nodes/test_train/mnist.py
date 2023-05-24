@@ -59,7 +59,7 @@ def get_small_mnist_datasets(
     torch_dataset_path: str, train: bool = True, download: bool = False, transform=transforms.ToTensor()
 ) -> (torch.utils.data.Dataset, torch.utils.data.Dataset):
     dataset = datasets.MNIST(root=torch_dataset_path, train=train, download=download, transform=transform)
-    return torch.utils.data.random_split(dataset, [1500, 150, 58350])[:-1]
+    return torch.utils.data.random_split(dataset, [1200, 130, 60_000 - 1200 - 130])[:-1]
 
 
 def train_mnist_classifier(

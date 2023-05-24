@@ -5,16 +5,16 @@ from src.common.const import MetricsOutputValues as mov
 
 from .tools import data_preprocess, update_metrics
 
+import torch
+import torch.nn as nn
+
 
 def mse_metric(y_true, y_pred, metrics: Dict[str, Any] = None) -> Dict[str, Dict[str, Any]]:
-    y_pred = data_preprocess(y_pred)
-    y_true = data_preprocess(y_true)
-    assert len(y_true) == len(y_pred)
-    mse = sum([(y_1 - y_2) ** 2 for y_1, y_2 in zip(y_true, y_pred)]) / len(y_true)
-
+    mse = nn.MSELoss()
+    output = mse(torch.cat(y_pred), torch.cat(y_true))
     data = {
         mov.MSE: {
-            mc.VALUE: mse.item(),
+            mc.VALUE: output.item(),
             mc.BEST: mc.DOWN,
         },
     }

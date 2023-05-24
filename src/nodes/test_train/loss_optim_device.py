@@ -6,6 +6,7 @@ from src.common.const import CommonConst as cc
 
 
 def get_device(is_cuda: bool = False):
+    print(torch.device("cpu") if not is_cuda else torch.device("cuda:0"))
     return torch.device("cpu") if not is_cuda else torch.device("cuda:0")
 
 

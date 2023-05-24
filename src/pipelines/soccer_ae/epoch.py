@@ -41,7 +41,7 @@ epoch_pipeline = pipeline(
         node(
             func=sl.save_state_dict,
             inputs=["experiment_name", "metrics", "updated_model", "updated_optimizer", "epoch"],
-            outputs="none_1",
+            outputs=None,
         ),
         node(
             func=sl.mlflow_registry,
@@ -54,7 +54,7 @@ epoch_pipeline = pipeline(
                 "rbm_init_type": "rbm_init_type",
                 "rbm_type": "rbm_type",
             },
-            outputs="none_2",
+            outputs=None,
         ),
         node(
             func=common.log_dict,
