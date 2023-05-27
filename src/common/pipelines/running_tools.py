@@ -14,7 +14,7 @@ def run_pipeline(config, updated_data=None, max_epoch=20):
     common_pipeline(
         preprocessing_pipeline=config[pcc.PREPROCESSING],
         epoch_pipeline=config[pcc.EPOCH],
-        postrocessing_pipeline=config[pcc.POSTPROCESSING],
+        postprocessing_pipeline=config[pcc.POSTPROCESSING],
         data=data,
         max_epoch=max_epoch,
     )
@@ -27,13 +27,13 @@ def _get_experiment_name(prefix, new_data, postfix=""):
 
 def run_rbm_experiment(config, max_epoch, rbm_epochs, rbm_init_types, rbm_types, prefix="", postfix=""):
     for rbm_type in rbm_types:
-        if rbm_type == rt.NO_RBM:
-            new_config = {"rbm_type": rbm_type}
-            new_config["experiment_name"] = _get_experiment_name(prefix, new_config, postfix)
-            run_pipeline(config, new_config, max_epoch=max_epoch)
-        else:
-            for rbm_epoch in rbm_epochs:
-                for rbm_init_type in rbm_init_types:
-                    new_config = {"rbm_epoch": rbm_epoch, "rbm_init_type": rbm_init_type, "rbm_type": rbm_type}
-                    new_config["experiment_name"] = _get_experiment_name(prefix, new_config, postfix)
-                    run_pipeline(config, new_config, max_epoch=max_epoch)
+        # if rbm_type == rt.NO_RBM:
+        #     new_config = {"rbm_type": rbm_type}
+        #     new_config["experiment_name"] = _get_experiment_name(prefix, new_config, postfix)
+        #     run_pipeline(config, new_config, max_epoch=max_epoch)
+        # else:
+        for rbm_epoch in rbm_epochs:
+            for rbm_init_type in rbm_init_types:
+                new_config = {"rbm_epoch": rbm_epoch, "rbm_init_type": rbm_init_type, "rbm_type": rbm_type}
+                new_config["experiment_name"] = _get_experiment_name(prefix, new_config, postfix)
+                run_pipeline(config, new_config, max_epoch=max_epoch)

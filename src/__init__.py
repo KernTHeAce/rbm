@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from src.common.logging import set_project_logging
+import torch
+torch.manual_seed(0)
 
 DEFAULT_MAX_EPOCH = 20
 

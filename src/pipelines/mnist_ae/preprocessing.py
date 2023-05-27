@@ -11,35 +11,14 @@ from src.nodes.test_train import soccer as soc
 preprocessing_pipeline = pipeline(
     [
         node(
-            func=load_state_dict,
-            inputs=["experiment_name", "checkpoint", "new_experiment"],
+            func=load_state_dict, inputs=["experiment_name", "checkpoint", "new_experiment"],
             outputs=["loaded_model", "loaded_optimizer", "loaded_epoch", "is_model_initialized"],
         ),
-        node(
-            func=mnist.get_mnist_dataset,
-            inputs=["mnist_train_dataset_path"],
-            outputs="mnist_train_dataset",
-        ),
-        node(
-            func=mnist.get_mnist_dataset,
-            inputs=["mnist_test_dataset_path"],
-            outputs="mnist_test_dataset",
-        ),
-        # node(
-        #     func=mnist.get_small_mnist_datasets,
-        #     inputs=["mnist_test_dataset_path"],
-        #     outputs=["mnist_train_dataset", "mnist_test_dataset"],
-        # ),
-        node(
-            func=common.dataset_to_dataloader,
-            inputs=["mnist_train_dataset", "batch_size", "shuffle"],
-            outputs="train_data_loader",
-        ),
-        node(
-            func=common.dataset_to_dataloader,
-            inputs=["mnist_test_dataset", "batch_size", "shuffle"],
-            outputs="test_data_loader",
-        ),
+        # node(func=mnist.get_mnist_dataset, inputs=["mnist_train_dataset_path"], outputs="mnist_train_dataset"),
+        # node(func=mnist.get_mnist_dataset, inputs=["mnist_test_dataset_path"], outputs="mnist_test_dataset"),
+        node(func=mnist.get_small_mnist_datasets, inputs=["mnist_train_dataset_path"], outputs=["mnist_train_dataset", "mnist_test_dataset"]),
+        node(func=common.dataset_to_dataloader, inputs=["mnist_train_dataset", "batch_size", "shuffle"], outputs="train_data_loader"),
+        node(func=common.dataset_to_dataloader, inputs=["mnist_test_dataset", "batch_size", "shuffle"], outputs="test_data_loader"),
         node(func=lod.get_device, inputs="is_cuda", outputs="device"),
         node(func=soc.get_ae_model, inputs=["features", "loaded_model"], outputs="model"),
         node(func=lod.get_mse_loss, inputs=None, outputs="loss"),

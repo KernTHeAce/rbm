@@ -14,21 +14,21 @@ preprocessing_pipeline = pipeline(
             inputs=["experiment_name", "checkpoint", "new_experiment"],
             outputs=["loaded_model", "loaded_optimizer", "loaded_epoch", "is_model_initialized"],
         ),
-        # node(
-        #     func=mnist.get_mnist_dataset,
-        #     inputs=["mnist_train_dataset_path"],
-        #     outputs="mnist_train_dataset",
-        # ),
-        # node(
-        #     func=mnist.get_mnist_dataset,
-        #     inputs=["mnist_test_dataset_path"],
-        #     outputs="mnist_test_dataset",
-        # ),
         node(
-            func=mnist.get_small_mnist_datasets,
-            inputs=["mnist_test_dataset_path"],
-            outputs=["mnist_train_dataset", "mnist_test_dataset"],
+            func=mnist.get_mnist_dataset,
+            inputs=["mnist_train_dataset_path"],
+            outputs="mnist_train_dataset",
         ),
+        node(
+            func=mnist.get_mnist_dataset,
+            inputs=["mnist_test_dataset_path"],
+            outputs="mnist_test_dataset",
+        ),
+        # node(
+        #     func=mnist.get_small_mnist_datasets,
+        #     inputs=["mnist_test_dataset_path"],
+        #     outputs=["mnist_train_dataset", "mnist_test_dataset"],
+        # ),
         node(
             func=common.dataset_to_dataloader,
             inputs=["mnist_train_dataset", "batch_size", "shuffle"],

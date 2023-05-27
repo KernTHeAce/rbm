@@ -8,7 +8,7 @@ from src.common.utils import update_datacatalog
 runner = SequentialRunner()
 
 
-def common_pipeline(epoch_pipeline, data, preprocessing_pipeline=None, postrocessing_pipeline=None, max_epoch=20):
+def common_pipeline(epoch_pipeline, data, preprocessing_pipeline=None, postprocessing_pipeline=None, max_epoch=20):
     if preprocessing_pipeline:
         preprocessing_output = runner.run(preprocessing_pipeline, data)
         loop_data = update_datacatalog(DataCatalog({}), preprocessing_output["results"])
@@ -22,5 +22,5 @@ def common_pipeline(epoch_pipeline, data, preprocessing_pipeline=None, postroces
         loop_data = update_datacatalog(loop_data, {slc.EPOCH: i}, replace=True)
         epoch_output = runner.run(epoch_pipeline, loop_data)
         loop_data = update_datacatalog(loop_data, epoch_output["results"], replace=True)
-    if postrocessing_pipeline:
-        runner.run(postrocessing_pipeline, loop_data)
+    if postprocessing_pipeline:
+        runner.run(postprocessing_pipeline, loop_data)

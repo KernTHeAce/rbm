@@ -20,7 +20,7 @@ config = {
         "initialized_optimizer": MemoryDataSet(copy_mode="assign"),
         "loaded_model": MemoryDataSet(copy_mode="assign"),
         "loaded_optimizer": MemoryDataSet(copy_mode="assign"),
-        "batch_size": MemoryDataSet(16),
+        "batch_size": MemoryDataSet(64),
         "shuffle": MemoryDataSet(True),
         "features": MemoryDataSet([28 * 28, 100, 50, 10]),
         "is_cuda": MemoryDataSet(False),

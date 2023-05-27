@@ -53,6 +53,7 @@ def train_ae(
     model, optimizer, loss_fn, train_loader, device, preprocessing=None, metrics: Dict[str, Any] = None
 ):
     time_start = time()
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     model = model.train().to(device)
     average_loss = Average()
     for data in train_loader:
@@ -64,12 +65,12 @@ def train_ae(
             input = preprocessing(input)
         input = input.to(device).to(torch.double)
 
-        optimizer.zero_grad()
         input_encoded, input_decoded = model(input)
         loss = loss_fn(input_decoded, input)
 
         loss.backward()
         optimizer.step()
+        optimizer.zero_grad()
         average_loss.add(loss.item())
     time_end = time() - time_start
     data = {
@@ -83,6 +84,7 @@ def train_ae(
 
 def test_ae(model, loss_fn, test_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):
     time_start = time()
+
     model = model.train().to(device)
     with torch.no_grad():
         average_loss = Average()
