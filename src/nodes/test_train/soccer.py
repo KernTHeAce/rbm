@@ -49,12 +49,20 @@ def rbm_init_ae(
     return model
 
 
-def train_ae(
-    model, optimizer, loss_fn, train_loader, device, preprocessing=None, metrics: Dict[str, Any] = None
-):
+def train_ae(model, optimizer, loss_fn, train_loader, device, preprocessing=None, metrics: Dict[str, Any] = None):
     time_start = time()
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     model = model.train().to(device)
+    # import os
+    # if os.path.exists("data.txt"):
+    #     with open("data1.txt", "w+") as f:
+    #         f.write(str(model.encoder[0].bias.data))
+    #     raise Exception("lol")
+    # with open("data.txt", "w+") as f:
+    #     f.write(str(model.encoder[0].bias.data))
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+
+
+
     average_loss = Average()
     for data in train_loader:
         if len(data) != 2:
@@ -70,8 +78,9 @@ def train_ae(
 
         loss.backward()
         optimizer.step()
-        optimizer.zero_grad()
+
         average_loss.add(loss.item())
+        optimizer.zero_grad()
     time_end = time() - time_start
     data = {
         mov.TRAIN_AVERAGE_LOSS: {

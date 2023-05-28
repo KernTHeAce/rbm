@@ -38,24 +38,24 @@ epoch_pipeline = pipeline(
             outputs=["test_time", "test_train_av_loss_metrics", "y_true", "y_pred"],
         ),
         node(func=mse_metric, inputs=["y_true", "y_pred", "test_train_av_loss_metrics"], outputs="metrics"),
-        node(
-            func=sl.save_state_dict,
-            inputs=["experiment_name", "metrics", "updated_model", "updated_optimizer", "epoch"],
-            outputs=None,
-        ),
-        node(
-            func=sl.mlflow_registry,
-            inputs={
-                "experiment_name": "experiment_name",
-                "metrics": "metrics",
-                "epoch": "epoch",
-                "lr": "lr",
-                "rbm_epoch": "rbm_epoch",
-                "rbm_init_type": "rbm_init_type",
-                "rbm_type": "rbm_type",
-            },
-            outputs=None,
-        ),
+        # node(
+        #     func=sl.save_state_dict,
+        #     inputs=["experiment_name", "metrics", "updated_model", "updated_optimizer", "epoch"],
+        #     outputs=None,
+        # ),
+        # node(
+        #     func=sl.mlflow_registry,
+        #     inputs={
+        #         "experiment_name": "experiment_name",
+        #         "metrics": "metrics",
+        #         "epoch": "epoch",
+        #         "lr": "lr",
+        #         "rbm_epoch": "rbm_epoch",
+        #         "rbm_init_type": "rbm_init_type",
+        #         "rbm_type": "rbm_type",
+        #     },
+        #     outputs=None,
+        # ),
         node(
             func=common.log_dict,
             inputs={

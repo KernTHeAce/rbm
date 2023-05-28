@@ -1,11 +1,18 @@
-from kedro.io import DataCatalog
+from typing import Any, Dict
+
+from kedro.io import DataCatalog, MemoryDataSet
 from kedro.runner import SequentialRunner
 
 from src.common.const import CommonConst as cc
 from src.common.const import SaverLoaderConst as slc
-from src.common.utils import update_datacatalog
 
 runner = SequentialRunner()
+
+
+def update_datacatalog(datacatalog: DataCatalog, new_data: Dict[str, Any], replace=False):
+    for key, value in new_data.items():
+        datacatalog.add(key, MemoryDataSet(value, copy_mode="assign"), replace=replace)
+    return datacatalog
 
 
 def common_pipeline(epoch_pipeline, data, preprocessing_pipeline=None, postprocessing_pipeline=None, max_epoch=20):

@@ -87,7 +87,7 @@ def rbm_linear_sequential_init_in_layer_order(
                     device=device,
                     t_out=biases[i],
                     w_out=weights[i],
-                    commulative_rule=rbm_type==rt.CRRBM
+                    commulative_rule=rbm_type == rt.CRRBM,
                 )
                 # data preprocess
                 if len(data) != 2:

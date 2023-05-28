@@ -56,7 +56,11 @@ preprocessing_pipeline = pipeline(
             ],
             outputs="initialized_model",
         ),
-        node(func=lod.get_adam_optimizer, inputs=["initialized_model", "lr", "loaded_optimizer"], outputs="initialized_optimizer"),
+        node(
+            func=lod.get_adam_optimizer,
+            inputs=["initialized_model", "lr", "loaded_optimizer"],
+            outputs="initialized_optimizer",
+        ),
         node(
             func=output_concat,
             inputs={

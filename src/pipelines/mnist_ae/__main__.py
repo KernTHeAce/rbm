@@ -1,7 +1,6 @@
 from src.common.pipelines import run_rbm_experiment
 from src.pipelines import common_data as cd
 from src.pipelines import parse
-
 from src.pipelines.mnist_ae.config import config
 
 if __name__ == "__main__":
@@ -14,5 +13,5 @@ if __name__ == "__main__":
         rbm_types=cd.RBM_TYPES,
         rbm_init_types=cd.RBM_INIT_TYPES,
         prefix="mnist_ae",
-        postfix="test1",
+        postfix="",
     )

@@ -12,5 +12,5 @@ if __name__ == "__main__":
         rbm_types=cd.RBM_TYPES,
         rbm_init_types=cd.RBM_INIT_TYPES,
         prefix="mnist_classifier",
-        postfix="0",
+        postfix="",
     )

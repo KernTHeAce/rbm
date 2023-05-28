@@ -50,9 +50,11 @@ def rbm_init_classifier(
 
 
 def get_mnist_dataset(
-    torch_dataset_path: str, train: bool = True, download: bool = False, transform=transform
+    torch_dataset_path: str, train: bool = False, download: bool = True, transform=transform
 ) -> torch.utils.data.Dataset:
-    return datasets.MNIST(root=torch_dataset_path, train=train, download=download, transform=transform)
+    return datasets.MNIST(
+        root=torch_dataset_path, train=torch_dataset_path.endswith("train"), download=False, transform=transform
+    )
 
 
 def get_small_mnist_datasets(
@@ -74,12 +76,13 @@ def train_mnist_classifier(
         if preprocessing is not None:
             input = preprocessing(input)
         input = input.to(device).to(torch.double)
-        optimizer.zero_grad()
+
         output = model(input)
         loss = loss_fn(output, labels)
         loss.backward()
         optimizer.step()
         average_loss.add(loss.item())
+        optimizer.zero_grad()
     time_end = time() - time_start
     data = {
         mov.TRAIN_AVERAGE_LOSS: {

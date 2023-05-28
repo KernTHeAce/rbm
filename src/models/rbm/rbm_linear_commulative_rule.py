@@ -50,11 +50,14 @@ class RBMLinearCR(BaseRBM):
         self.lr_min_max = lr_min_max if lr_min_max else (1e-8, 1e-2)
         self.batch_size = batch_size
 
-
     def init_param(self, w_out, t_out, commulative_rule):
         stdv = 1.0 / sqrt(self.in_features)
         w = self.w_in.t().data.clone()
-        b = torch.Tensor(self.in_features).uniform_(-stdv, stdv).to(self.device).to(torch.double) if t_out is None else t_out
+        b = (
+            torch.Tensor(self.in_features).uniform_(-stdv, stdv).to(self.device).to(torch.double)
+            if t_out is None
+            else t_out
+        )
         if commulative_rule:
             w = (
                 torch.Tensor(self.in_features, self.out_features).uniform_(-stdv, stdv).to(self.device).to(torch.double)
