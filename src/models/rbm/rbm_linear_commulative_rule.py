@@ -17,17 +17,13 @@ from src.models.rbm.base_rbm import BaseRBM
 # torch.backends.cudnn.allow_tf32 = True
 
 
-# TODO need to saving t_out to dbn for continue training by epoch_per_layer
 class RBMLinearCR(BaseRBM):
-    """Cumulative rule for Linear layer"""
 
     def __init__(
         self,
         layer,
         batch_size=1,
         f=nn.Tanh(),
-        using_derivative=True,
-        use_min_max=True,
         lr_min_max: Tuple[float, float] = None,
         t_out: torch.Tensor = None,
         w_out: torch.Tensor = None,
@@ -45,8 +41,6 @@ class RBMLinearCR(BaseRBM):
         self.out_features, self.in_features = self.w_in.size()
         self.w_out, self.t_out = self.init_param(w_out, t_out, commulative_rule)
         self.f, self.f_ = self.activation(f, using_derivative)
-        self.using_derivative = using_derivative
-        self.use_min_max = use_min_max
         self.lr_min_max = lr_min_max if lr_min_max else (1e-8, 1e-2)
         self.batch_size = batch_size
 
@@ -102,33 +96,7 @@ class RBMLinearCR(BaseRBM):
         lr[lr < self.lr_min_max[0]] = self.lr_min_max[0]
         return lr
 
-    def _forward_no_bias(self, x0, lr=1e-3, lr_auto=False, is_training=True):
-        with torch.no_grad():
-            s_y0 = torch.matmul(x0, self.w_in.t())
-            y0 = self.f(s_y0)
-            s_x1 = torch.matmul(y0, self.w_out.t())
-            x1 = self.f(s_x1)
-            s_y1 = torch.matmul(x1, self.w_in.t())
-            y1 = self.f(s_y1)
-
-            if is_training:
-                w_in_grad = torch.matmul(((y1 - y0) * self.f_(s_y1)).t(), x1)
-                w_out_grad = torch.matmul(((x1 - x0) * self.f_(s_x1)).t(), y0)
-
-                if lr_auto:
-                    lr_x, lr_y = self.adaptive_lr_no_bias(x0, y0, s_x1, x1, s_y1, y1)
-                    if lr_x == lr_y is None:
-                        lr_x, lr_y = (lr, lr)
-                else:
-                    lr_x, lr_y = (lr, lr)
-
-                # Update weights
-                self.w_in = self.w_in - lr_y * w_in_grad
-                self.w_out = self.w_out - lr_x * w_out_grad
-
-        return x0, y0, x1, y1
-
-    def _forward_bias(
+    def forward(
         self,
         x0: torch.Tensor,
         lr: float = 1e-3,
@@ -236,47 +204,10 @@ class RBMLinearCR(BaseRBM):
             bi = (x1 - x0) * ri * (1 + (y0.square()).sum())
             lr_y = ((s_y1 * rj_next - y0) * bj * rj_next).sum() / (torch.square(rj_next * bj)).sum()
             lr_x = ((s_x1 * ri_next - x0) * bi * ri_next).sum() / (torch.square(ri_next * bi)).sum()
-            if self.use_min_max:
+            if self.lr_min_max is not None:
                 return self.min_max_lr(lr_x), self.min_max_lr(lr_y)
             else:
                 return lr_x, lr_y
-
-    def adaptive_lr_bias_every(self, x0, y0, s_x1, x1, s_y1, y1):
-        """For LeakyReLU function only"""
-
-        with torch.no_grad():
-            rj = self.f_(s_y1)
-            ri = self.f_(s_x1)
-            rj_next = self.f_(y0)
-            ri_next = self.f_(x0)
-            bj = (y1 - y0) * rj * (1 + (x1.square()).sum())
-            bi = (x1 - x0) * ri * (1 + (y0.square()).sum())
-            lr_y = ((s_y1 * rj_next - y0) * bj * rj_next) / (torch.square(rj_next * bj))
-            lr_x = ((s_x1 * ri_next - x0) * bi * ri_next) / (torch.square(ri_next * bi))
-            if self.use_min_max:
-                return self.min_max_lr_every(lr_x), self.min_max_lr_every(lr_y)
-            else:
-                return lr_x, lr_y
-
-    def forward(
-        self,
-        x0: torch.Tensor,
-        lr: float = 1e-3,
-        lr_auto: bool = False,
-        lr_const: float = None,
-        is_training: bool = True,
-        is_bias: bool = True,
-    ):
-        if is_bias:
-            return self._forward_bias(
-                x0=x0,
-                lr=lr,
-                lr_auto=lr_auto,
-                lr_const=lr_const,
-                is_training=is_training,
-            )
-        else:
-            return self._forward_no_bias(x0, lr, lr_auto, is_training)
 
     def get_trained_layer(self, get_bias: bool = False, get_weights: bool = False):
         layer = nn.Linear(in_features=self.in_features, out_features=self.out_features)
@@ -288,3 +219,5 @@ class RBMLinearCR(BaseRBM):
         if get_weights:
             results.append(self.w_out.data.clone())
         return tuple(results) if len(results) > 1 else layer
+
+
