@@ -1,4 +1,4 @@
-class AdaptiveLR:
+class AdaptiveLRCalculator:
     def __init__(self, batch_size, batch_num, input_neurons_num, output_neurons_num):
         self.batch_size = batch_size
         self.batch_num = batch_num
