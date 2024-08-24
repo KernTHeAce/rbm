@@ -1,7 +1,10 @@
 from torch import nn
 
 
-class BaseRBM(nn.Module):
+class BaseRBM:
+    def __init__(self, *args, **kwargs):
+        ...
+
     @staticmethod
     def activation(f, using_derivative):
         # assert isinstance(f, nn.LeakyReLU)

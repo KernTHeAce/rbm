@@ -18,7 +18,7 @@ test_set = SoccerCSVDataSet(f"{DATA_DIR}/soccer/01_raw/wiscout/test_x_sigm_136.c
 test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
 model_initializer = ModelRBMInitializer(
-    train_loader, 3, DEVICE, lr=0.001
+    train_loader, 3, DEVICE, lr=0.001, adaptive_lr=True
 )
 
 trainer = BaseTrainer(
@@ -30,7 +30,7 @@ trainer = BaseTrainer(
     test_loader=test_loader,
 )
 
-logger = MlFlowLogger("My_experiment1", "rbm")
+logger = MlFlowLogger("My_experiment1", "rbm_debug_adaptive")
 
 metrics_calculator = MetricCalculator([metrics.mse])
 

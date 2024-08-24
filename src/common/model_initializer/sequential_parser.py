@@ -1,6 +1,6 @@
 from torch import nn
 
-from .sequential_parser_const import ParserConst as pc
+from .const import ParserConst as pc
 
 
 class SequentialParser:

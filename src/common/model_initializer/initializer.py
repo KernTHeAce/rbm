@@ -1,8 +1,8 @@
 from typing import Any, Dict, List
 from torch.nn import Sequential
 
-from .sequential_parser_const import ParserConst as pc
-from .rbm.rbm import LayerRBMInitializer
+from .const import ParserConst as pc
+from .rbm.rbm_adaptive_lr import LayerRbmAdaptiveLrInitializer, LayerRBMInitializer
 from .sequential_parser import SequentialParser
 
 
@@ -28,21 +28,25 @@ class ModelRBMInitializer:
         layers = parser.get_layers(model.model)
         biases = [None] * len(layers)
         for epoch in range(self.epochs):
-            for data in self.loader:
+            for i_, data in enumerate(self.loader):
                 for i in range(len(layers)):
-                    rbm = LayerRBMInitializer(
-                        layer=layers[i][pc.LAYER],
-                        activation=layers[i][pc.FUNC],
-                        t_out=biases[i],
-                        lr=self.lr,
-                        is_lr_adaptive=self.adaptive_lr,
-                        batch_size=self.loader.batch_size,
-                        batch_num=len(self.loader),
+                    rbm = LayerRbmAdaptiveLrInitializer(
+                        layers[i][pc.LAYER],
+                        layers[i][pc.FUNC],
+                        self.lr,
+                        biases[i],
+                        self.device,
+                        self.adaptive_lr,
+                        self.loader.batch_size,
                     )
                     input_ = data.to(self.device)
                     if i != 0:
                         pretrained_model = Sequential(*self.layer_list_preprocess(layers[:i]))
                         input_ = pretrained_model(input_)
+                    print(f"epoch: {epoch}  batch: {i_}, layer: {i}")
+                    import time
+                    start = time.time()
                     rbm.forward(input_)
+                    print(f"forward: {time.time() - start} sec")
                     layers[i][pc.LAYER], biases[i] = rbm.get_trained_layer(get_bias=True)
         return Sequential(*self.layer_list_preprocess(layers))

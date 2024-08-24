@@ -1,28 +1,28 @@
 from .rbm import LayerRBMInitializer
-from .adaptive_lr2 import AdaptiveLRCalculator
-
-from math import sqrt
+from .base_rbm import BaseRBM
+from .adaptive_lr3 import AdaptiveLRCalculator
 
 import torch
-from torch import nn
 from torch import Tensor
 
 
 class LayerRbmAdaptiveLrInitializer(LayerRBMInitializer):
     def __init__(
         self,
+        # *args,
         layer,
         activation,
         lr,
         t_out: Tensor = None,
-        w_out: Tensor = None,
         device=torch.device("cuda:0"),
         is_lr_adaptive=True,
-        **adaptive_lr_kwargs
+        batch_size=None,
     ):
-        super(LayerRBMInitializer, self).__init__(layer, activation, lr, t_out, w_out, device)
+        super().__init__(layer, activation, lr, t_out, device)
         self.is_lr_adaptive = is_lr_adaptive
-        self.lr_calculator = AdaptiveLRCalculator(**adaptive_lr_kwargs) if is_lr_adaptive else None
+        self.lr_calculator = AdaptiveLRCalculator(
+            batch_size, self.in_features, self.out_features
+        ) if is_lr_adaptive else None
 
     def forward(self, x0: Tensor, is_training: bool = True):
         with torch.no_grad():
@@ -34,7 +34,9 @@ class LayerRbmAdaptiveLrInitializer(LayerRBMInitializer):
             y1 = self.f(s_y1)
             if is_training:
                 if self.is_lr_adaptive:
-                    lr = self.lr_calculator()
+                    lr = self.lr_calculator(y0, y1, x0, x1, s_x1, s_y1, self.f)
+                else:
+                    lr = self.lr
                 self.update_weights_biases(
                     x0=x0,
                     y0=y0,
@@ -42,6 +44,6 @@ class LayerRbmAdaptiveLrInitializer(LayerRBMInitializer):
                     y1=y1,
                     s_x1=s_x1,
                     s_y1=s_y1,
-                    lr=self.lr
+                    lr=lr
                 )
             return x0, y0, x1, y1

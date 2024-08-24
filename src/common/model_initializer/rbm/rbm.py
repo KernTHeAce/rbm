@@ -8,7 +8,7 @@ from torch.nn.parameter import Parameter
 from .base_rbm import BaseRBM
 
 
-class LayerRBMInitializer(BaseRBM):
+class LayerRBMInitializer:
 
     def __init__(
         self,
@@ -17,15 +17,14 @@ class LayerRBMInitializer(BaseRBM):
         lr,
         t_out: Tensor = None,
         device=torch.device("cuda:0"),
-        **kwargs
     ):
-        super(BaseRBM, self).__init__()
+        # super(BaseRBM, self).__init__()
         assert isinstance(layer, nn.Linear)
         self.device = device
         self.lr = lr
         self.w_in = layer.weight.data.clone().to(device)
         self.t_in = layer.bias.data.clone().to(device)
-        self.w_in.requires_grad_(True)
+        # self.w_in.requires_grad_(True)
         self.out_features, self.in_features = self.w_in.size()
         self.w_out, self.t_out = self.init_out_params(t_out)
         self.f, self.f_ = self.activation(activation, using_derivative=True)
@@ -89,3 +88,45 @@ class LayerRBMInitializer(BaseRBM):
         if get_bias:
             return layer, self.t_out.data.clone()
         return layer
+
+    @staticmethod
+    def activation(f, using_derivative):
+        # assert isinstance(f, nn.LeakyReLU)
+        if f is not None:
+            if using_derivative:
+                f_ = BaseRBM.derivative(f)
+            else:
+                f_ = lambda y: 1.0
+        else:
+            f = lambda s: s
+            f_ = lambda y: 1.0
+        return f, f_
+
+    @staticmethod
+    def derivative(f):
+        if type(f) == nn.Sigmoid:
+            f_ = lambda y: y * (1.0 - y)
+        elif type(f) == nn.Tanh:
+            f_ = lambda y: 1.0 - (y ** 2)
+        elif type(f) == nn.ReLU:
+
+            def _relu(y):
+                yc = y.clone()
+                yc[yc >= 0] = 1.0
+                yc[yc < 0] = 0.0
+                return yc
+
+            f_ = _relu
+        elif type(f) == nn.LeakyReLU:
+
+            def _leaky_relu(y):
+                yc = y.clone()
+                yc[yc >= 0] = 1.0
+                yc[yc < 0] = f.negative_slope
+                return yc
+
+            f_ = _leaky_relu
+        else:
+            print('Error. Activation function "{}" is not support!'.format(type(f)))
+            exit(1)
+        return f_
