@@ -54,7 +54,7 @@ epoch_pipeline = pipeline(
         #         "rbm_init_type": "rbm_init_type",
         #         "rbm_type": "rbm_type",
         #     },
-        #     outputs=None,
+        #     outputs=None,  8748419165620
         # ),
         node(
             func=common.log_dict,

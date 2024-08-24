@@ -1,10 +1,10 @@
 import mlflow
+#
+# from src import MLRUNS_DIR
+# from src.common.const import CommonConst as cc
+# from src.common.const import MetricConst as mc
 
-from src import MLRUNS_DIR
-from src.common.const import CommonConst as cc
-from src.common.const import MetricConst as mc
-
-mlflow.set_tracking_uri(MLRUNS_DIR)
+# mlflow.set_tracking_uri(MLRUNS_DIR)
 
 
 def get_id_by_name(df, name):

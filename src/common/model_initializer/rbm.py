@@ -6,18 +6,8 @@ from torch import nn
 
 from src.models.rbm.base_rbm import BaseRBM
 
-# The flag below controls whether to allow TF32 on matmul. This flag defaults to False
-# in PyTorch 1.12 and later.
-# torch.set_default_dtype(torch.double)
-# torch.backends.cuda.matmul.allow_tf32 = True
-# torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = False
-#
-#
-# # The flag below controls whether to allow TF32 on cuDNN. This flag defaults to True.
-# torch.backends.cudnn.allow_tf32 = True
 
-
-class RBMLinearCR(BaseRBM):
+class LayerRBMInitializer(BaseRBM):
 
     def __init__(
         self,

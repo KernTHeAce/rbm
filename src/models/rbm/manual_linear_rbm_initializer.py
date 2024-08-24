@@ -9,7 +9,6 @@ from src.common.const import RBMInitTypes as rit
 from src.common.const import RBMTypes as rt
 from src.common.utils.sequential_parser import SequentialParser
 
-# from .rbm_manual_linear import RBMManualLinearCR
 from .rbm_linear_commulative_rule import RBMLinearCR
 
 

@@ -1,4 +1,4 @@
-from sklearn.metrics import precision_recall_fscore_support
+# from sklearn.metrics import precision_recall_fscore_support
 
 from src.common.const import MetricConst as mc
 from src.common.const import MetricsOutputValues as mov
