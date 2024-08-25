@@ -57,7 +57,7 @@ class AdaptiveLRCalculator:
             tmp2 = torch.Tensor([0]).to(factor.device)
             for neuron_index in range(neurons_num):
                 tmp2 += factor[cur_obj_i][neuron_index] * factor[obj_i][neuron_index]
-            result += tmp * tmp2
+            result += tmp * tmp2 + 1
         return result
 
     def calc_z_kj(self, y_0, y_1, x_0, x_1, cur_obj_i, cur_neuron_i, activation_f):

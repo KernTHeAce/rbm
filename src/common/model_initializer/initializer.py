@@ -43,10 +43,11 @@ class ModelRBMInitializer:
                     if i != 0:
                         pretrained_model = Sequential(*self.layer_list_preprocess(layers[:i]))
                         input_ = pretrained_model(input_)
-                    print(f"epoch: {epoch}  batch: {i_}, layer: {i}")
+                    # print(f"epoch: {epoch}  batch: {i_}, layer: {i}")
                     import time
                     start = time.time()
                     rbm.forward(input_)
-                    print(f"forward: {time.time() - start} sec")
+                    # print(f"forward: {time.time() - start} sec")
                     layers[i][pc.LAYER], biases[i] = rbm.get_trained_layer(get_bias=True)
+                print("stop")
         return Sequential(*self.layer_list_preprocess(layers))

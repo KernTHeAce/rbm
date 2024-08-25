@@ -1,6 +1,5 @@
 from .rbm import LayerRBMInitializer
-from .base_rbm import BaseRBM
-from .adaptive_lr3 import AdaptiveLRCalculator
+from .adaptive_lr import AdaptiveLRCalculator
 
 import torch
 from torch import Tensor
@@ -9,7 +8,6 @@ from torch import Tensor
 class LayerRbmAdaptiveLrInitializer(LayerRBMInitializer):
     def __init__(
         self,
-        # *args,
         layer,
         activation,
         lr,
