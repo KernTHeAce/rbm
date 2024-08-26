@@ -30,6 +30,13 @@ class C_calculator:
         self.z_j_calc = Z_calculator(x_1, x_0, y_0, x_1, activation_f)
         self.z_i_calc = Z_calculator(y_1, y_0, x_1, y_0, activation_f)
 
+    def batch_is_over(self, cur_obj_i):
+        try:
+            self.c_i_[cur_obj_i]
+        except IndexError:
+            return True
+        return False
+
     def bj(self, cur_obj_i, cur_neuron_i):
         f = self.f_j_calc(cur_obj_i, cur_neuron_i)
         z = self.z_j_calc(cur_obj_i, cur_neuron_i)
@@ -58,6 +65,8 @@ class AdaptiveLRCalculator:
         denominator = 0
         c_calculator = C_calculator(y_0, y_1, x_0, x_1, s_x, s_y, activation_f)
         for cur_obj_i in range(self.batch_size):
+            if c_calculator.batch_is_over(cur_obj_i):
+                return numerator / denominator
             for cur_neuron_i in range(self.output_neurons_num):
                 numerator += c_calculator.cj(cur_obj_i, cur_neuron_i)
                 denominator += activation_f(c_calculator.bj(cur_obj_i, cur_neuron_i)) ** 2

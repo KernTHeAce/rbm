@@ -21,6 +21,7 @@ class LayerRbmAdaptiveLrInitializer(LayerRBMInitializer):
         self.lr_calculator = AdaptiveLRCalculator(
             batch_size, self.in_features, self.out_features
         ) if is_lr_adaptive else None
+        self.lr_min_max = (1e-8, 1e-2)
 
     def forward(self, x0: Tensor, is_training: bool = True):
         with torch.no_grad():
@@ -33,6 +34,7 @@ class LayerRbmAdaptiveLrInitializer(LayerRBMInitializer):
             if is_training:
                 if self.is_lr_adaptive:
                     lr = self.lr_calculator(y0, y1, x0, x1, s_x1, s_y1, self.f)
+                    lr = min(self.lr_min_max[1], max(lr, self.lr_min_max[0]))
                 else:
                     lr = self.lr
                 self.update_weights_biases(

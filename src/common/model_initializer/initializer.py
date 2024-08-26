@@ -44,5 +44,6 @@ class ModelRBMInitializer:
                         pretrained_model = Sequential(*self.layer_list_preprocess(layers[:i]))
                         input_ = pretrained_model(input_)
                     rbm.forward(input_)
+                    print(f"epoch: {epoch}  batch: {i_}, layer: {i}")
                     layers[i][pc.LAYER], biases[i] = rbm.get_trained_layer(get_bias=True)
         return Sequential(*self.layer_list_preprocess(layers))

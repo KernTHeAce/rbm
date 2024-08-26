@@ -18,7 +18,7 @@ test_set = SoccerCSVDataSet(f"{DATA_DIR}/soccer/01_raw/wiscout/test_x_sigm_136.c
 test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=SHUFFLE)
 
 model_initializer = ModelRBMInitializer(
-    train_loader, 3, DEVICE, lr=0.001, adaptive_lr=True
+    test_loader, 1, DEVICE, lr=0.001, adaptive_lr=True,
 )
 
 trainer = BaseTrainer(
@@ -26,11 +26,11 @@ trainer = BaseTrainer(
     1e-3,
     torch.nn.MSELoss(),
     DEVICE,
-    train_loader=train_loader,
+    train_loader=test_loader,
     test_loader=test_loader,
 )
 
-logger = MlFlowLogger("My_experiment1", "rbm_debug_adaptive")
+logger = MlFlowLogger("My_experiment2", "rbm_debug_adaptive3", True)
 
 metrics_calculator = MetricCalculator([metrics.mse])
 
