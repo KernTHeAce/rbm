@@ -8,7 +8,7 @@ from .sequential_parser import SequentialParser
 
 class ModelRBMInitializer:
     def __init__(
-            self, train_loader, epochs, device, lr, grad_min_max=(-100, 100), use_grad_clipping=False, adaptive_lr=False
+            self, train_loader, device, lr, epochs=None, grad_min_max=(-100, 100), grad_clipping=False, adaptive_lr=False
     ):
         self.adaptive_lr = adaptive_lr
         self.loader = train_loader
@@ -16,7 +16,7 @@ class ModelRBMInitializer:
         self.device = device
         self.lr = lr
         self.grad_min_max = grad_min_max
-        self.use_grad_clipping = use_grad_clipping
+        self.use_grad_clipping = grad_clipping
 
     def __bool__(self):
         return self.adaptive_lr is not None

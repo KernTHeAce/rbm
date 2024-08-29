@@ -2,8 +2,7 @@ from common import Model
 from common.experiment import rbm_experiment, generate_combinations
 from dataset import SoccerCSVDataSet
 
-from src import DATA_DIR, DEVICE, BATCH_SIZE
-from src import DEVICE, ADAPTIVE_LRS, ADAM_EPOCHS, INITIALIZER_EPOCHS, GRAD_MIN_MAX
+from src import DATA_DIR, BATCH_SIZE, INITIALIZER_EPOCHS, DEVICE
 
 from torch.utils.data import DataLoader
 
@@ -29,17 +28,26 @@ rbm_combinations = generate_combinations({
     "adaptive_lr": [False]
 })
 
-reference_combinations = [{"adaptive_lr": False}]
+reference_combinations = [{"adaptive_lr": None}]
 
-all_combinations = reference_combinations + rbm_combinations + rbm_adaptive_combinations
+initializer_combinations = reference_combinations + rbm_combinations + rbm_adaptive_combinations
+model_combinations = generate_combinations({
+    "l": ["s", "m", "l"],
+    "w_k": [1, 7, 15],
+})
 AUTOENCODER_INPUT_SIZE = 39
 
-for w_k in [1, 7, 15]:
-    for key, value in lengths.items():
-        model = Model([AUTOENCODER_INPUT_SIZE] + [item * w_k for item in value] + [AUTOENCODER_INPUT_SIZE]).to(DEVICE)
-        rbm_experiment(
-            test_loader=test_loader,
-            train_loader=train_loader,
-            experiment_name=f"1_soccer_l={key}_wk={w_k}",
-            model=model
-        )
+for model_params in model_combinations:
+    model = Model(
+        [AUTOENCODER_INPUT_SIZE] +
+        [item * model_params["w_k"] for item in lengths[model_params["l"]]] +
+        [AUTOENCODER_INPUT_SIZE]
+    ).to(DEVICE)
+
+    rbm_experiment(
+        test_loader=test_loader,
+        train_loader=test_loader,
+        experiment_name=f"soccer_l={model_params['l']}_wk={model_params['w_k']}",
+        model=model,
+        params=initializer_combinations
+    )
