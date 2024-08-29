@@ -73,6 +73,6 @@ class AdaptiveLRCalculator:
             for cur_neuron_i in range(self.input_neurons_num):
                 numerator += c_calculator.ci(cur_obj_i, cur_neuron_i)
                 denominator += activation_f(c_calculator.bi(cur_obj_i, cur_neuron_i)) ** 2
-        return numerator / denominator
+        return (numerator / denominator).item()
 
 
