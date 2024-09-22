@@ -1,7 +1,7 @@
 import time
 
 
-def pipeline(model, trainer, epochs, metric_calculator, logger, model_initializer=None):
+def model_training_pipeline(model, trainer, epochs, metric_calculator, logger, model_initializer=None):
     start_run = time.time()
     start_initializing = time.time()
     if model_initializer:
@@ -13,15 +13,19 @@ def pipeline(model, trainer, epochs, metric_calculator, logger, model_initialize
 
     trainer.init_optimizer(model)
     for epoch in range(epochs):
-        model, inputs, outputs = trainer.epoch(model)
-        metrics = metric_calculator(inputs, outputs, "train")
+        print(epoch)
+        model, targets, outputs, avg_loss = trainer.epoch(model)
+        metrics = metric_calculator(targets, outputs, "train")
+        metrics["train_avg_loss"] = avg_loss
         logger.log_metrics(metrics, epoch)
 
-        inputs, outputs = trainer.test(model)
-        metrics = metric_calculator(inputs, outputs, "test")
+        targets, outputs, avg_loss = trainer.test(model)
+        metrics = metric_calculator(targets, outputs, "test")
+        metrics["test_avg_loss"] = avg_loss
         logger.log_metrics(metrics, epoch)
 
-    inputs, outputs = trainer.test(model)
+    inputs, outputs, avg_loss = trainer.test(model)
     metrics = metric_calculator(inputs, outputs, "final_test_")
     logger.log_params(metrics)
     logger.log_params({"time": time.time() - start_run})
+    return model, trainer.optimizer

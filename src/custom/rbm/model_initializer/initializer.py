@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
-from torch.nn import Sequential
+
+from torch.nn import ReLU, Sequential
 
 from .const import ParserConst as pc
 from .rbm.rbm_adaptive_lr import LayerRbmAdaptiveLrInitializer
@@ -8,10 +9,10 @@ from .sequential_parser import SequentialParser
 
 class ModelRBMInitializer:
     def __init__(
-            self, train_loader, device, lr, epochs=None, grad_min_max=(-100, 100), grad_clipping=False, adaptive_lr=False
+        self, trainer, device, lr, epochs=None, grad_min_max=(-100, 100), grad_clipping=False, adaptive_lr=False
     ):
         self.adaptive_lr = adaptive_lr
-        self.loader = train_loader
+        self.trainer = trainer
         self.epochs = epochs
         self.device = device
         self.lr = lr
@@ -35,9 +36,10 @@ class ModelRBMInitializer:
         layers = parser.get_layers(model.model)
         biases = [None] * len(layers)
         for epoch in range(self.epochs):
-            for i_, data in enumerate(self.loader):
+            for batch in self.trainer.train_loader:
                 for i in range(len(layers)):
-                    # print(epoch, i_, i)
+                    if not isinstance(layers[i][pc.FUNC], ReLU):
+                        continue
                     rbm = LayerRbmAdaptiveLrInitializer(
                         layers[i][pc.LAYER],
                         layers[i][pc.FUNC],
@@ -46,13 +48,14 @@ class ModelRBMInitializer:
                         biases[i],
                         self.device,
                         self.adaptive_lr,
-                        self.loader.batch_size,
-                        use_grad_clipping=self.use_grad_clipping
+                        self.trainer.train_loader.batch_size,
+                        use_grad_clipping=self.use_grad_clipping,
                     )
-                    input_ = data.to(self.device)
+                    input_, _ = self.trainer.get_data(batch)
                     if i != 0:
                         pretrained_model = Sequential(*self.layer_list_preprocess(layers[:i]))
                         input_ = pretrained_model(input_)
+                        123
                     output = rbm.forward(input_)
 
                     if output is None:

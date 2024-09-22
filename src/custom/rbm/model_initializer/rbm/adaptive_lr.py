@@ -23,8 +23,8 @@ class Z_calculator:
 class C_calculator:
     def __init__(self, y_0, y_1, x_0, x_1, s_x, s_y, activation_f):
         self.activation = activation_f
-        self.c_j_ = (activation_f(s_y) - y_0)
-        self.c_i_ = (activation_f(s_x) - x_0)
+        self.c_j_ = activation_f(s_y) - y_0
+        self.c_i_ = activation_f(s_x) - x_0
         self.f_j_calc = F_calculator(y_1, y_0, x_1, activation_f)
         self.f_i_calc = F_calculator(x_1, x_0, y_0, activation_f)
         self.z_j_calc = Z_calculator(x_1, x_0, y_0, x_1, activation_f)
@@ -74,5 +74,3 @@ class AdaptiveLRCalculator:
                 numerator += c_calculator.ci(cur_obj_i, cur_neuron_i)
                 denominator += activation_f(c_calculator.bi(cur_obj_i, cur_neuron_i)) ** 2
         return (numerator / denominator).item()
-
-

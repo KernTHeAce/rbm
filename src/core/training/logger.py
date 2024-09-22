@@ -1,4 +1,5 @@
 import mlflow
+
 from src import MLRUNS_DIR
 
 mlflow.set_tracking_uri(MLRUNS_DIR)
@@ -21,18 +22,14 @@ class MlFlowLogger:
 
     def log_params(self, params):
         with mlflow.start_run(
-            run_name=self.run_name,
-            experiment_id=self.experiment.experiment_id,
-            run_id=self.get_run_id(self.run_name)
+            run_name=self.run_name, experiment_id=self.experiment.experiment_id, run_id=self.get_run_id(self.run_name)
         ):
             for param_name, param_value in params.items():
                 mlflow.log_param(param_name, value=param_value)
 
     def log_metrics(self, metrics, epoch):
         with mlflow.start_run(
-            run_name=self.run_name,
-            experiment_id=self.experiment.experiment_id,
-            run_id=self.get_run_id(self.run_name)
+            run_name=self.run_name, experiment_id=self.experiment.experiment_id, run_id=self.get_run_id(self.run_name)
         ):
             if self.print_:
                 print(f"epoch :{epoch}, metrics: {metrics}")

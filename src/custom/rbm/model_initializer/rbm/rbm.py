@@ -1,15 +1,13 @@
-import torch
 import math
 
-from torch import nn
-from torch import Tensor
+import torch
+from torch import Tensor, nn
 from torch.nn.parameter import Parameter
 
 from .base_rbm import BaseRBM
 
 
 class LayerRBMInitializer:
-
     def __init__(
         self,
         layer,
@@ -49,15 +47,7 @@ class LayerRBMInitializer:
             s_y1 = self.get_weight_sum(x1, self.w_in, self.t_in)
             y1 = self.f(s_y1)
             if is_training:
-                self.update_weights_biases(
-                    x0=x0,
-                    y0=y0,
-                    x1=x1,
-                    y1=y1,
-                    s_x1=s_x1,
-                    s_y1=s_y1,
-                    lr=self.lr
-                )
+                self.update_weights_biases(x0=x0, y0=y0, x1=x1, y1=y1, s_x1=s_x1, s_y1=s_y1, lr=self.lr)
             return x0, y0, x1, y1, s_x1, s_y1
 
     @staticmethod
@@ -65,7 +55,7 @@ class LayerRBMInitializer:
         return torch.add(torch.matmul(in_features, w.t()), t)
 
     def update_weights_biases(
-            self, x0: Tensor, y0: Tensor, x1: Tensor, y1: Tensor, s_x1: Tensor, s_y1: Tensor, lr: float
+        self, x0: Tensor, y0: Tensor, x1: Tensor, y1: Tensor, s_x1: Tensor, s_y1: Tensor, lr: float
     ):
         w_in_grad = torch.matmul((y1 - y0).t(), self.f(x1)) + torch.matmul((x1 - x0).t(), self.f(y0)).t()
         t_in_grad = self.f(y1 - y0).sum(dim=0)
@@ -107,7 +97,7 @@ class LayerRBMInitializer:
         if type(f) == nn.Sigmoid:
             f_ = lambda y: y * (1.0 - y)
         elif type(f) == nn.Tanh:
-            f_ = lambda y: 1.0 - (y ** 2)
+            f_ = lambda y: 1.0 - (y**2)
         elif type(f) == nn.ReLU:
 
             def _relu(y):

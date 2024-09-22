@@ -1,0 +1,31 @@
+from torch import nn
+
+
+class Model(nn.Module):
+    def __init__(self, features: list):
+        super(Model, self).__init__()
+        self.features = features
+
+        modules = []
+        for i, (in_features, out_features) in enumerate(zip(self.features[:-1], self.features[1:])):
+            modules.append(nn.Linear(in_features=in_features, out_features=out_features).double())
+            modules.append(nn.ReLU())
+        modules = self.postprocess_modules(modules)
+        self.model = nn.Sequential(*modules)
+
+    @staticmethod
+    def postprocess_modules(modules):
+        return modules
+
+    def forward(self, x):
+        return self.model(x)
+
+    def __str__(self):
+        return f"Model model with features: {self.features}"
+
+
+class Classifier(Model):
+    @staticmethod
+    def postprocess_modules(modules):
+        modules[-1] = nn.Softmax()
+        return modules

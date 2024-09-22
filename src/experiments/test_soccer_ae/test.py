@@ -1,23 +1,14 @@
-from common import Model
-from common.experiment import rbm_experiment
-from dataset import SoccerCSVDataSet
-
-from src import DATA_DIR, DEVICE, BATCH_SIZE
-
-from torch.utils.data import DataLoader
-from common import BaseTrainer, pipeline, MetricCalculator, metrics, MlFlowLogger
-from common.model_initializer.initializer import ModelRBMInitializer
-from copy import deepcopy
-import torch
 import datetime
+from copy import deepcopy
 
-from src import DEVICE, ADAPTIVE_LRS, ADAM_EPOCHS, INITIALIZER_EPOCHS
+import torch
+from dataset import SoccerCSVDataSet
+from torch.utils.data import DataLoader
 
-
-
-
-
-
+from core import BaseTrainer, MetricCalculator, MlFlowLogger, Model, metrics, model_training_pipeline
+from core.experiment import rbm_experiment
+from core.model_initializer.initializer import ModelRBMInitializer
+from src import ADAM_EPOCHS, ADAPTIVE_LRS, BATCH_SIZE, DATA_DIR, DEVICE, INITIALIZER_EPOCHS
 
 # Пример использования
 parameters = {"param_1": [1, 2], "param_2": [0, 1, 2]}
