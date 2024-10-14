@@ -5,6 +5,7 @@ import torch
 torch.manual_seed(0)
 
 DEVICE = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+# DEVICE = torch.device("cpu")
 ADAPTIVE_LRS = [None, False]
 INITIALIZER_EPOCHS = [1, 5, 10]
 GRAD_MIN_MAX = (-15, 15)

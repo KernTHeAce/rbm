@@ -3,7 +3,7 @@ from torch import nn
 
 
 class PlantClassifier(nn.Module):
-    def __init__(self, depth=3, width=256, height=256, num_classes=12):
+    def __init__(self, depth=3, width=256, height=256, num_classes=14):
         super(PlantClassifier, self).__init__()
 
         self.conv_block1 = nn.Sequential(
@@ -46,5 +46,5 @@ class PlantClassifier(nn.Module):
 
 
 height, width, depth = 128, 128, 3
-n_classes = 12
+n_classes = 14
 model = PlantClassifier(height, width, depth, n_classes)

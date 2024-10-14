@@ -28,8 +28,11 @@ class BaseTrainer:
     def get_data(self, batch):
         if len(batch) == 2:
             input_ = self.preprocessing(batch[0]).to(self.device)
-            target = batch[1].to(self.device)
-            return input_, target
+            if isinstance(self.loss, torch.nn.CrossEntropyLoss):
+                target = batch[1].to(self.device)  # for mnist classification
+                return input_, target
+            else:
+                return input_, input_  # for mnist ae
         input_ = self.preprocessing(batch).to(self.device)
         return input_, input_
 

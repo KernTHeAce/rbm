@@ -3,17 +3,17 @@ import time
 
 def model_training_pipeline(model, trainer, epochs, metric_calculator, logger, model_initializer=None):
     start_run = time.time()
-    start_initializing = time.time()
     if model_initializer:
+        start_initializing = time.time()
         model = model_initializer(model)
+        logger.log_params({"initializing time": time.time() - start_initializing})
         if model is None:
             logger.log_params({"errors": "exploding gradients"})
             return
-    logger.log_params({"initializing time": time.time() - start_initializing})
 
     trainer.init_optimizer(model)
     for epoch in range(epochs):
-        print(epoch)
+        # print(epoch)
         model, targets, outputs, avg_loss = trainer.epoch(model)
         metrics = metric_calculator(targets, outputs, "train")
         metrics["train_avg_loss"] = avg_loss
