@@ -83,27 +83,35 @@ class CumulativeRuleInitializer:
         self.device = device
         self.lr = lr
 
-    # def update_params(self, model: CumulativeRuleModel, y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1, target):
-    #     i = 0
-    #     for layer in model.forward_layers:
-    #         if isinstance(layer, nn.Linear):
-    #             for j in range(len(y_forward_0)):
-    #
-    #             layer.weight -= self.lr * (torch.sum(torch.square(y_forward_1 - y_forward_0)) / 2 + torch.sum(torch.square(y_middle - target)) / 2).grad
-    #             i += 1
+    def update_params(self, model: CumulativeRuleModel, y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1, target, loss):
+        i = 0
+        mse = torch.nn.MSELoss()
+        for layer in model.forward_layers:
+            if isinstance(layer, nn.Linear):
+                error = mse(y_forward_1[i], y_forward_0[i]) + loss(y_middle, target)
+                grad_w = torch.autograd.grad(error, layer.weight)[0]
+                grad_b = torch.autograd.grad(error, layer.bias)[0]
+                with torch.no_grad:
+                    layer.weight -= LR * grad_w
+                    layer.bias -= LR * grad_b
+                i += 1
+
+        i = 0
+        for layer in model.reverse_layers:
+            if isinstance(layer, nn.Linear):
+                error = mse(y_reverse_1[i], y_reverse_0[i])
+                layer.weight -= LR * torch.autograd.grad(error, layer.weight)[0]
+                layer.bias -= LR * torch.autograd.grad(error, layer.bias)[0]
+                i += 1
+        return model
+
     def __call__(self, model):
         model = CumulativeRuleModel(model)
-        optimizer = Adam(params=model.parameters(), lr=self.lr)
-        loss = CustomLoss(self.trainer.loss)
         for epoch in range(self.epochs):
             for batch in self.trainer.train_loader:
                 input_, target = self.trainer.get_data(batch)
                 y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1 = model.test(input_)
-                # self.update_params(model, y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1, target)
-                error = loss(y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1, target, model)
-                error.backward()
-                optimizer.step()
-        # return nn.Sequential(*self.layer_list_preprocess(layers))
+                model = self.update_params(model, y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1, target, self.trainer.loss)
         return model
 
 train_loader = torch.utils.data.DataLoader(
