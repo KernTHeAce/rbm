@@ -5,8 +5,8 @@ import torch
 
 from core.training import BaseTrainer, MlFlowLogger, model_training_pipeline
 from .utils import get_name_by_params
-from custom.rbm.model_initializer.initializer import ModelRBMInitializer
-from src import ADAM_EPOCHS, DEVICE, GRAD_MIN_MAX
+from custom.rbm.model_initializer.rbm_initializer import ModelRBMInitializer
+from src import ADAM_EPOCHS, DEVICE, GRAD_MIN_MAX, LR
 
 
 def run_experiment(
@@ -22,7 +22,7 @@ def run_experiment(
 ):
     trainer = BaseTrainer(
         torch.optim.Adam,
-        1e-3,
+        LR,
         loss,
         DEVICE,
         train_loader=train_loader,
@@ -68,9 +68,9 @@ def init_model_with_rbm_experiment(
         response = run_experiment(
             test_loader, train_loader, experiment_name, model, loss, current_param, metrics_calculator, preprocessing, postprocessing,
         )
-        if response is None:
-            updated_params = remove_useless_params(current_param, params)
-            init_model_with_rbm_experiment(
-                test_loader, train_loader, experiment_name, model, loss, updated_params, metrics_calculator, preprocessing, postprocessing,
-            )
-            return
+        # if response is None:
+        #     updated_params = remove_useless_params(current_param, params)
+        #     init_model_with_rbm_experiment(
+        #         test_loader, train_loader, experiment_name, model, loss, updated_params, metrics_calculator, preprocessing, postprocessing,
+        #     )
+        #     return

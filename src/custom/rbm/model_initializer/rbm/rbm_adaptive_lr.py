@@ -12,13 +12,12 @@ class LayerRbmAdaptiveLrInitializer(LayerRBMInitializer):
         activation,
         lr,
         grad_min_max,
-        t_out: Tensor = None,
         device=torch.device("cuda:0"),
         is_lr_adaptive=True,
         batch_size=None,
         use_grad_clipping=False,
     ):
-        super().__init__(layer, activation, lr, t_out, device)
+        super().__init__(layer, activation, lr, device)
         self.is_lr_adaptive = is_lr_adaptive
         self.lr_calculator = (
             AdaptiveLRCalculator(batch_size, self.in_features, self.out_features) if is_lr_adaptive else None

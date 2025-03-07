@@ -12,5 +12,5 @@ def get_name_by_params(params):
     if params["adaptive_lr"] is None:
         return "reference"
     if params["adaptive_lr"]:
-        return f"rbm_adapt_{params['epochs']}_{params['grad_clipping']}"
-    return f"rbm_{params['epochs']}"
+        return f"rbm_adapt_{params['epochs']}_ssl_{params['semisupervised_learning']}"
+    return f"rbm_{params['epochs']}_ssl_{params['semisupervised_learning']}"

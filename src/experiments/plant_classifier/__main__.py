@@ -39,11 +39,9 @@ orig_set = ImageFolder(str(Path(DATA_DIR, "custom_plants_dataset_balanced")), tr
 train_set_size = int(len(orig_set) * 0.9)
 train_set, test_set = torch.utils.data.random_split(orig_set, [train_set_size, len(orig_set) - train_set_size])
 
-test_loader = DataLoader(test_set, batch_size=32, shuffle=True)
+test_loader = DataLoader(test_set, batch_size=1, shuffle=True)
 
 train_loader = DataLoader(train_set, batch_size=32, shuffle=True)
-
-model = PlantClassifier().to(DEVICE)
 
 trainer = BaseTrainer(
     torch.optim.Adam,
@@ -51,7 +49,7 @@ trainer = BaseTrainer(
     torch.nn.CrossEntropyLoss(),
     DEVICE,
     train_loader=train_loader,
-    test_loader=test_loader,
+    test_loader=train_loader,
     postprocessing=lambda outputs: torch.tensor([torch.argmax(batch).item() for batch in outputs]).to(DEVICE),
 )
 
@@ -64,17 +62,31 @@ metrics_calculator = MetricCalculator(
     ]
 )
 
+
+# def _get_model(model_path="/home/kern/PycharmProjects/rbm/src/experiments/plant_classifier/model", num_classes=14):
+#     model = models.resnet50()
+#     model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
+#     model.load_state_dict(torch.load(model_path))
+#     return model
+
+def _get_model(model_path, num_classes=14):
+    model = models.resnet50()
+    model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
+    model.load_state_dict(torch.load(model_path))
+    return model
+
 pretrained_models = {
-    "resnet18": models.resnet18,
-    "resnet34": models.resnet34,
-    "resnet50": models.resnet50,
-    "resnet101": models.resnet101,
-    "resnet152": models.resnet152,
+    # "resnet18": models.resnet18,
+    # "resnet34": models.resnet34,
+    "resnet50__1": models.resnet50,
+    # "resnet101": models.resnet101,
+    # "resnet152": models.resnet152,
 }
 for key, item in pretrained_models.items():
-    logger = MlFlowLogger(f"plants_balanced", key)
+    logger = MlFlowLogger(f"plants_balanced1", key)
 
-    model, optimizer = model_training_pipeline(get_resnet_model(item), trainer, 30, metrics_calculator, logger, model_initializer=None)
+    # model, optimizer = model_training_pipeline(get_resnet_model(item), trainer, 50, metrics_calculator, logger, model_initializer=None)
+    model, optimizer = model_training_pipeline(_get_model("/home/kern/PycharmProjects/rbm/src/experiments/plant_classifier/model.pth"), trainer, 1, metrics_calculator, logger, model_initializer=None)
 
-# torch.save(model.state_dict(), "/home/kern/PycharmProjects/rbm/src/experiments/plant_classifier/model")
-# torch.save(optimizer.state_dict(), "/home/kern/PycharmProjects/rbm/src/experiments/plant_classifier/optimizer")
+torch.save(model.state_dict(), "/home/kern/PycharmProjects/rbm/src/experiments/plant_classifier/model.pth")
+torch.save(optimizer.state_dict(), "/home/kern/PycharmProjects/rbm/src/experiments/plant_classifier/optimizer")

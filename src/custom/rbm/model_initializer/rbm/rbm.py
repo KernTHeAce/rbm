@@ -13,7 +13,6 @@ class LayerRBMInitializer:
         layer,
         activation,
         lr,
-        t_out: Tensor = None,
         device=torch.device("cuda:0"),
     ):
         # super(BaseRBM, self).__init__()
@@ -22,15 +21,12 @@ class LayerRBMInitializer:
         self.lr = lr
         self.w_in = layer.weight.data.clone().to(device)
         self.t_in = layer.bias.data.clone().to(device)
-        # self.w_in.requires_grad_(True)
         self.out_features, self.in_features = self.w_in.size()
-        self.w_out, self.t_out = self.init_out_params(t_out)
+        self.w_out, self.t_out = self.init_out_params()
         self.f, self.f_ = self.activation(activation, using_derivative=True)
 
-    def init_out_params(self, t_out):
+    def init_out_params(self):
         w = self.w_in.t().data.clone()
-        if t_out is not None:
-            return w, t_out
 
         t = Parameter(torch.empty(self.in_features, device=self.device, dtype=None))  # initializing like pytorch
         fan_in, _ = nn.init._calculate_fan_in_and_fan_out(w)
@@ -71,12 +67,10 @@ class LayerRBMInitializer:
         b_grad = grad_part.sum(dim=0)
         return w_grad, b_grad
 
-    def get_trained_layer(self, get_bias: bool = False):
+    def get_trained_layer(self):
         layer = nn.Linear(in_features=self.in_features, out_features=self.out_features)
         layer.weight.data = self.w_in.data.clone()
         layer.bias.data = self.t_in.data.clone()
-        if get_bias:
-            return layer, self.t_out.data.clone()
         return layer
 
     @staticmethod

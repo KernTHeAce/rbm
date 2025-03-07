@@ -45,8 +45,7 @@ test_loader = torch.utils.data.DataLoader(
 lengths = {"s": [15], "m": [35, 15, 10], "l": [50, 35, 20, 15, 10]}
 model_combinations = generate_combinations(
     {
-        # "l": ["s", "m", "l"],
-        "l": ["l"],
+        "l": ["s", "m", "l"],
         "w_k": [1, 7, 15],
     }
 )
@@ -61,7 +60,7 @@ for model_params in model_combinations:
     init_model_with_rbm_experiment(
         test_loader=test_loader,
         train_loader=train_loader,
-        experiment_name=f"12mnist_l={model_params['l']}_wk={model_params['w_k']}",
+        experiment_name=f"1mnist_l={model_params['l']}_wk={model_params['w_k']}",
         model=model,
         loss=torch.nn.CrossEntropyLoss(),
         params=DEFAULT_RBM_EXPERIMENT_INIT_COMBINATIONS[:],

@@ -13,7 +13,6 @@ def model_training_pipeline(model, trainer, epochs, metric_calculator, logger, m
 
     trainer.init_optimizer(model)
     for epoch in range(epochs):
-        # print(epoch)
         model, targets, outputs, avg_loss = trainer.epoch(model)
         metrics = metric_calculator(targets, outputs, "train")
         metrics["train_avg_loss"] = avg_loss
