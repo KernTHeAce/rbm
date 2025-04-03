@@ -9,8 +9,8 @@ DEVICE = torch.device("cpu")
 ADAPTIVE_LRS = [None, False]
 INITIALIZER_EPOCHS = [1, 5, 10]
 GRAD_MIN_MAX = (-15, 15)
-ADAM_EPOCHS = 50
-BATCH_SIZE = 32
+ADAM_EPOCHS = 3
+BATCH_SIZE = 64
 LR = 1e-3
 
 BASE_DIR = str(Path(__file__).resolve().parent.parent)

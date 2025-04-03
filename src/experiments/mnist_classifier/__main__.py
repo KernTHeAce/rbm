@@ -4,9 +4,9 @@ from torch.utils.data import DataLoader
 
 from core.metrics import MetricCalculator, classification
 from core.models import Classifier
-from custom.rbm import generate_combinations, init_model_with_rbm_experiment
+from custom.rbm import generate_combinations, run_experiment
 from src import BATCH_SIZE, DATA_DIR, DEVICE
-from src.experiments import DEFAULT_RBM_EXPERIMENT_INIT_COMBINATIONS
+from src.experiments import INITIALIZERS
 
 train_loader = torch.utils.data.DataLoader(
     torchvision.datasets.MNIST(
@@ -57,14 +57,18 @@ for model_params in model_combinations:
     model = Classifier(
         [MODEL_INPUT_SIZE] + [item * model_params["w_k"] for item in lengths[model_params["l"]]] + [MODEL_OUTPUT_SIZE]
     ).to(DEVICE)
-    init_model_with_rbm_experiment(
-        test_loader=test_loader,
-        train_loader=train_loader,
-        experiment_name=f"1mnist_l={model_params['l']}_wk={model_params['w_k']}",
-        model=model,
-        loss=torch.nn.CrossEntropyLoss(),
-        params=DEFAULT_RBM_EXPERIMENT_INIT_COMBINATIONS[:],
-        metrics_calculator=metrics_calculator,
-        preprocessing=lambda img: img.view(-1, 28 * 28),
-        postprocessing=lambda outputs: torch.tensor([torch.argmax(batch).item() for batch in outputs]).to(DEVICE),
-    )
+
+    for initializer_type, value in INITIALIZERS.items():
+        for initializer_params in value:
+            response = run_experiment(
+                test_loader,
+                train_loader,
+                f"1mnist_l={model_params['l']}_wk={model_params['w_k']}",
+                model,
+                torch.nn.CrossEntropyLoss(),
+                initializer_params,
+                initializer_type,
+                metrics_calculator,
+                lambda img: img.view(-1, 28 * 28),
+                lambda outputs: torch.tensor([torch.argmax(batch).item() for batch in outputs]).to(DEVICE),
+            )

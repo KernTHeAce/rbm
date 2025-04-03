@@ -6,8 +6,15 @@ import torch
 from core.training import BaseTrainer, MlFlowLogger, model_training_pipeline
 from .utils import get_name_by_params
 from custom.rbm.model_initializer.rbm_initializer import ModelRBMInitializer
+from custom.cr.initializer import CumulativeRuleInitializer
 from src import ADAM_EPOCHS, DEVICE, GRAD_MIN_MAX, LR
 
+
+initializer_map = {
+    "reference": lambda *args, **kwargs: None,
+    "cr": CumulativeRuleInitializer,
+    "rbm": ModelRBMInitializer
+}
 
 def run_experiment(
     test_loader,
@@ -16,6 +23,7 @@ def run_experiment(
     model,
     loss,
     param,
+    initializer_type,
     metrics_calculator,
     preprocessing=lambda x: x,
     postprocessing=lambda x: x,
@@ -30,8 +38,8 @@ def run_experiment(
         preprocessing=preprocessing,
         postprocessing=postprocessing,
     )
-    model_initializer = ModelRBMInitializer(trainer, device=DEVICE, lr=1e-3, grad_min_max=GRAD_MIN_MAX, **param)
-    run_name = get_name_by_params(param)
+    model_initializer = initializer_map[initializer_type](trainer, device=DEVICE, lr=LR, **param)
+    run_name = get_name_by_params(initializer_type, param)
     logger = MlFlowLogger(experiment_name, run_name)
     print(f"{datetime.datetime.now().strftime('%H:%M:%S.%f')[:-7]}  -  start {experiment_name} {run_name}")
     response = model_training_pipeline(
@@ -50,27 +58,3 @@ def remove_useless_params(current_param, params):
         if param.get("grad_clipping") == grad_clipping and param.get("adaptive_lr") == adaptive_lr and (x := param.get("epochs")) is not None and x > epochs:
             params.pop(index_)
     return params
-
-
-def init_model_with_rbm_experiment(
-    test_loader,
-    train_loader,
-    experiment_name,
-    model,
-    loss,
-    params,
-    metrics_calculator,
-    preprocessing=lambda x: x,
-    postprocessing=lambda x: x,
-):
-    while len(params):
-        current_param = params.pop(0)
-        response = run_experiment(
-            test_loader, train_loader, experiment_name, model, loss, current_param, metrics_calculator, preprocessing, postprocessing,
-        )
-        # if response is None:
-        #     updated_params = remove_useless_params(current_param, params)
-        #     init_model_with_rbm_experiment(
-        #         test_loader, train_loader, experiment_name, model, loss, updated_params, metrics_calculator, preprocessing, postprocessing,
-        #     )
-        #     return

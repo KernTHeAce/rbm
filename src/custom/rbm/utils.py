@@ -8,9 +8,11 @@ def generate_combinations(parameters):
     return combinations
 
 
-def get_name_by_params(params):
-    if params["adaptive_lr"] is None:
+def get_name_by_params(initializer_type, params):
+    if not params:
         return "reference"
-    if params["adaptive_lr"]:
-        return f"rbm_adapt_{params['epochs']}_ssl_{params['semisupervised_learning']}"
-    return f"rbm_{params['epochs']}_ssl_{params['semisupervised_learning']}"
+    if initializer_type == "rbm":
+        if params["adaptive_lr"]:
+            return f"rbm_adapt_{params['epochs']}_ssl_{params['semisupervised_learning']}"
+        return f"rbm_{params['epochs']}_ssl_{params['semisupervised_learning']}"
+    return f"cr_{params['epochs']}"

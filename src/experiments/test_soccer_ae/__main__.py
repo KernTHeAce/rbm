@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 
 from core.metrics import MetricCalculator, regression
 from core.models import BaseModel
-from custom.rbm import generate_combinations, init_model_with_rbm_experiment
+from custom.rbm import generate_combinations, init_model_experiment
 from src import BATCH_SIZE, DATA_DIR, DEVICE
 from src.experiments import DEFAULT_RBM_EXPERIMENT_INIT_COMBINATIONS
 
@@ -34,7 +34,7 @@ for model_params in model_combinations:
         + [MODEL_INPUT_SIZE]
     ).to(DEVICE)
 
-    init_model_with_rbm_experiment(
+    init_model_experiment(
         test_loader=test_loader,
         train_loader=train_loader,
         experiment_name=f"soccer_l={model_params['l']}_wk={model_params['w_k']}",
