@@ -3,12 +3,13 @@ from copy import deepcopy
 
 import torch
 from core.models import Classifier
+from src import ADAM_EPOCHS, DEVICE, GRAD_MIN_MAX, LR
 
 
 class CumulativeRuleModel(nn.Module):
     def __init__(self, model):
         super(CumulativeRuleModel, self).__init__()
-        self.forward_layers = nn.Sequential(*[item for item in model.model])
+        self.forward_layers = nn.Sequential(*[item for item in model.model]).to(DEVICE)
         self.reverse_layers = []
         for layer in reversed([item for item in model.model][:-1]):
             if isinstance(layer, nn.Linear):
@@ -16,7 +17,7 @@ class CumulativeRuleModel(nn.Module):
                 layer = tmp
             self.reverse_layers.append(deepcopy(layer))
         self.reverse_layers.append(nn.ReLU())
-        self.reverse_layers = nn.Sequential(*self.reverse_layers)
+        self.reverse_layers = nn.Sequential(*self.reverse_layers).to(DEVICE)
 
     def forward_step(self, data, model_layers, preprocess):
         results = []
@@ -24,7 +25,7 @@ class CumulativeRuleModel(nn.Module):
         for layer in model_layers:
             layers.append(layer)
             if layer.__class__ in [nn.ReLU, nn.LeakyReLU, nn.Softmax]:
-                tmp_model = nn.Sequential(*layers)
+                tmp_model = nn.Sequential(*layers).to(DEVICE)
                 data1 = preprocess(data)
                 results.append(tmp_model(data1))
         return results
@@ -92,7 +93,8 @@ class CumulativeRuleInitializer:
             avg_loss = 0
             for batch in self.trainer.train_loader:
                 input_, target = self.trainer.get_data(batch)
-                y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1 = model.forward(input_)
-                model, loss = self.update_params(model, y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1, target, self.trainer.loss)
+                y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1 = model.forward(input_.to(DEVICE))
+                model, loss = self.update_params(model, y_forward_0, y_reverse_0, y_middle, y_forward_1, y_reverse_1, target.to(DEVICE), self.trainer.loss)
                 avg_loss += loss.item()
+            a = 2
         return self.restore_model(model)

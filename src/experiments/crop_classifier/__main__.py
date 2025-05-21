@@ -53,7 +53,7 @@ train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)  # shuffle=False для теста
 
 
-lengths = {"s": [7], "m": [7, 5, 3], "l": [10, 7, 5, 3]}
+lengths = {"s": [7], "m": [7, 10, 13], "l": [7, 10, 13, 15]}
 model_combinations = generate_combinations(
     {
         "l": ["s", "m", "l"],

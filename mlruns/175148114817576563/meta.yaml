@@ -1,0 +1,6 @@
+artifact_location: /home/kern/PycharmProjects/rbm/mlruns/175148114817576563
+creation_time: 1743698436174
+experiment_id: '175148114817576563'
+last_update_time: 1743698436174
+lifecycle_stage: active
+name: mnist_ae_l=s_wk=1

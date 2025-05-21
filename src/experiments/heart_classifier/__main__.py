@@ -74,7 +74,7 @@ for model_params in model_combinations:
             response = run_experiment(
                 test_loader,
                 train_loader,
-                f"1mnist_l={model_params['l']}_wk={model_params['w_k']}",
+                f"heart_cl_l={model_params['l']}_wk={model_params['w_k']}",
                 model,
                 torch.nn.CrossEntropyLoss(),
                 initializer_params,

@@ -54,6 +54,8 @@ MODEL_OUTPUT_SIZE = 10
 metrics_calculator = MetricCalculator([classification.f1(num_classes=10)])
 
 for model_params in model_combinations:
+    if model_params == {'l': 's', 'w_k': 1}:
+        continue
     model = Classifier(
         [MODEL_INPUT_SIZE] + [item * model_params["w_k"] for item in lengths[model_params["l"]]] + [MODEL_OUTPUT_SIZE]
     ).to(DEVICE)
@@ -63,7 +65,7 @@ for model_params in model_combinations:
             response = run_experiment(
                 test_loader,
                 train_loader,
-                f"1mnist_l={model_params['l']}_wk={model_params['w_k']}",
+                f"mnist_cl_l={model_params['l']}_wk={model_params['w_k']}",
                 model,
                 torch.nn.CrossEntropyLoss(),
                 initializer_params,

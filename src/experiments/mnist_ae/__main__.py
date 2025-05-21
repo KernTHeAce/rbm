@@ -54,6 +54,8 @@ MODEL_INPUT_SIZE = 28 * 28
 metrics_calculator = MetricCalculator([regression.mae()])
 
 for model_params in model_combinations:
+    if model_params == {'l': 's', 'w_k': 1}:
+        continue
     model = BaseModel(
         [MODEL_INPUT_SIZE]
         + [item * model_params["w_k"] for item in lengths[model_params["l"]]]
@@ -64,7 +66,7 @@ for model_params in model_combinations:
             response = run_experiment(
                 test_loader,
                 train_loader,
-                f"mnist_l={model_params['l']}_wk={model_params['w_k']}",
+                f"mnist_ae_l={model_params['l']}_wk={model_params['w_k']}",
                 model,
                 torch.nn.MSELoss(),
                 initializer_params,

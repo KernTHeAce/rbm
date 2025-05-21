@@ -9,7 +9,7 @@ DEVICE = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("
 ADAPTIVE_LRS = [None, False]
 INITIALIZER_EPOCHS = [1, 5, 10]
 GRAD_MIN_MAX = (-15, 15)
-ADAM_EPOCHS = 3
+ADAM_EPOCHS = 50
 BATCH_SIZE = 64
 LR = 1e-3
 

@@ -1,0 +1,15 @@
+artifact_uri: /home/kern/PycharmProjects/rbm/mlruns/787456312341253950/0b3c683093dd4331a6e5e365fe00ba48/artifacts
+end_time: 1747771595751
+entry_point_name: ''
+experiment_id: '787456312341253950'
+lifecycle_stage: active
+run_id: 0b3c683093dd4331a6e5e365fe00ba48
+run_name: rbm_5_ssl_True
+run_uuid: 0b3c683093dd4331a6e5e365fe00ba48
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747771585165
+status: 3
+tags: []
+user_id: kern
